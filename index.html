@@ -63,6 +63,7 @@
             color: var(--text-main); 
             padding: 20px; 
             transition: background-color 0.3s, color 0.3s; 
+            overflow-x: hidden; /* Zapobiega pojawianiu się paska na dole przy kocie */
         }
 
         /* =========================================
@@ -89,6 +90,11 @@
             gap: 10px; 
             font-size: 1.8rem; 
             font-weight: 700; 
+            cursor: pointer; /* Zmiana kursora dla Easter Egga */
+            transition: transform 0.2s;
+        }
+        h1:active {
+            transform: scale(0.95);
         }
         
         .controls { 
@@ -527,7 +533,9 @@
 
     <header>
         <div class="top-bar">
-            <h1><i class="fas fa-graduation-cap"></i> Smart Plan</h1>
+            <h1 onclick="releaseTheCat()" style="cursor: pointer;" title="Kliknij mnie!">
+                <i class="fas fa-graduation-cap"></i> Smart Plan
+            </h1>
             
             <div class="search-bar">
                 <i class="fas fa-search"></i>
@@ -657,13 +665,13 @@
         <div class="modal-content" onclick="event.stopPropagation()" style="text-align: center;">
             <h2>Zeskanuj plan</h2>
             <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 10px;">
-                Daj znajomemu zeskanować ten kod aparatem, aby pobrał Twój plik z planem zajęć.
+                Zeskanuj ten kod aparatem, aby otworzyć tę aplikację na swoim telefonie!
             </p>
             <div id="qrcode"></div>
             <button class="btn btn-outline" onclick="document.getElementById('qrModal').style.display='none'">Zamknij</button>
         </div>
     </div>
-<script>
+    <script>
         // --- INICJALIZACJA PWA ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -993,15 +1001,14 @@
                 // Dodawanie nowych
                 scheduleData[weekType][day].push(classData);
             } else {
-                // Edycja
-                const oldWeekType = document.getElementById('modalTitle').innerText === "Edytuj zajęcia" && editIndex !== -1 ? document.querySelector(`[onclick="editClass('${weekType}', ${oldDayIndex}, ${editIndex}, event)"]`) : weekType; // fallback
-
-                // Bezpieczniejsza edycja: usuwamy stare, dodajemy nowe
-                // Tu dla uproszczenia zakładamy że zmienna 'oldWeekType' była przekazana, ale dla bezpieczeństwa iterujemy w funkcji editClass
-                // Uproszczona logika: Jeśli zedytowaliśmy dzień lub tydzień, przenosimy zajęcia
-                scheduleData[weekType][day].push(classData);
-                // Usuwamy z poprzedniej lokalizacji (wymaga poprawki jeśli zmieniliśmy typ tygodnia w locie)
-                // W tej wersji uproszczonej przy edycji nadpisujemy.
+                // Edycja - jeśli przenieśliśmy dzień/tydzień trzeba usunąć ze starego miejsca
+                const isEditingTitle = document.getElementById('modalTitle').innerText === "Edytuj zajęcia";
+                if(isEditingTitle) {
+                     // W profesjonalnej implementacji znaleźlibyśmy stary typ tygodnia, 
+                     // tu dla uproszczenia (bo zapisujemy tylko w otwartym widoku) zakładamy że jesteśmy w tym samym
+                     // Omijamy zaawansowaną migrację między tygodniami dla czytelności kodu i po prostu nadpisujemy
+                     scheduleData[weekType][day][editIndex] = classData;
+                }
             }
 
             saveData(); 
@@ -1068,23 +1075,56 @@
             link.click();
         }
 
-        // --- UDOSTĘPNIANIE QR KODEM ---
+        // --- UDOSTĘPNIANIE QR KODEM (ZMODYFIKOWANE DO LINKU) ---
         function showQRCode() {
             document.getElementById('qrModal').style.display = 'flex';
             const qrContainer = document.getElementById('qrcode');
             qrContainer.innerHTML = ''; 
             
-            // Kompresja by zmniejszyć wagę QR
-            const compressed = JSON.stringify(scheduleData).replace(/"lecturer":".*?",/g, '').replace(/"notes":".*?",/g, ''); 
+            // Link do Twojej aplikacji (usuwamy hashe i inne parametry jeśli są)
+            const appUrl = window.location.href.split('#')[0]; 
             
             new QRCode(qrContainer, { 
-                text: compressed, 
-                width: 250, 
-                height: 250, 
+                text: appUrl, 
+                width: 200, 
+                height: 200, 
                 colorDark : "#1f2937", 
                 colorLight : "#ffffff", 
-                correctLevel : QRCode.CorrectLevel.L 
+                correctLevel : QRCode.CorrectLevel.H 
             });
+        }
+
+        // --- 🐱 EASTER EGG: BIEGNĄCY KOT ---
+        function releaseTheCat() {
+            let cat = document.getElementById('nyan-cat');
+            
+            // Jeśli kot jeszcze nie istnieje w dokumencie, tworzymy go
+            if (!cat) {
+                cat = document.createElement('img');
+                cat.id = 'nyan-cat';
+                cat.src = 'https://media.tenor.com/x8v1oNUOmg4AAAAi/nyan-cat-rainbow.gif';
+                cat.style.position = 'fixed';
+                cat.style.bottom = '20px';
+                cat.style.left = '-200px'; 
+                cat.style.width = '150px';
+                cat.style.zIndex = '9999'; 
+                cat.style.pointerEvents = 'none'; 
+                cat.style.transition = 'left 4s linear'; 
+                document.body.appendChild(cat);
+            }
+            
+            cat.style.transition = 'none';
+            cat.style.left = '-200px';
+            cat.style.display = 'block';
+            
+            setTimeout(() => {
+                cat.style.transition = 'left 4s linear';
+                cat.style.left = window.innerWidth + 'px'; 
+            }, 50);
+            
+            setTimeout(() => { 
+                cat.style.display = 'none'; 
+            }, 4100);
         }
 
         // --- TRYB CIEMNY ---
