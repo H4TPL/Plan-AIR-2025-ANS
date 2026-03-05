@@ -683,6 +683,13 @@
         const tnWeeksStarts = ['2026-02-23', '2026-03-09', '2026-03-23', '2026-04-06', '2026-04-20', '2026-05-04', '2026-05-18', '2026-06-01'];
         const tpWeeksStarts = ['2026-03-02', '2026-03-16', '2026-03-30', '2026-04-13', '2026-04-27', '2026-05-11', '2026-05-25', '2026-06-08'];
 
+        // --- DNI WOLNE I SESJE (Z KALENDARZA ANS) ---
+        const freeDays = ['2026-04-03', '2026-04-06', '2026-04-07', '2026-04-08', '2026-05-01', '2026-06-04'];
+        const sessionRanges = [
+            { start: '2026-06-15', end: '2026-06-28', title: 'Sesja Egzaminacyjna Letnia 📚' },
+            { start: '2026-09-07', end: '2026-09-20', title: 'Sesja Poprawkowa 📝' }
+        ];
+
         // --- BAZA DANYCH ---
         const defaultData = {
             "TN": {
@@ -719,15 +726,10 @@
             }
         };
 
-        // Ładowanie z LocalStorage lub użycie domyślnych
         let scheduleData = JSON.parse(localStorage.getItem('smartPlanData')) || defaultData;
-        
-        // Stan nawigacji kalendarza
         let viewDateStart = getMonday(new Date()); 
 
-        function saveData() {
-            localStorage.setItem('smartPlanData', JSON.stringify(scheduleData));
-        }
+        function saveData() { localStorage.setItem('smartPlanData', JSON.stringify(scheduleData)); }
 
         // --- FUNKCJE POMOCNICZE DAT ---
         function getMonday(d) {
@@ -748,6 +750,14 @@
             return 'INNY';
         }
 
+        function checkSpecialDay(dateStr) {
+            if (freeDays.includes(dateStr)) return { type: 'WOLNE', title: 'Dzień wolny od zajęć 🌴' };
+            for (let s of sessionRanges) {
+                if (dateStr >= s.start && dateStr <= s.end) return { type: 'SESJA', title: s.title };
+            }
+            return null;
+        }
+
         // --- RENDEROWANIE KALENDARZA ---
         function renderCalendar() {
             const calendar = document.getElementById('calendar'); 
@@ -759,7 +769,6 @@
             const todayStr = formatDateStr(now);
             const currentMins = now.getHours() * 60 + now.getMinutes();
 
-            // Aktualizacja etykiety tygodnia
             const friday = new Date(viewDateStart); 
             friday.setDate(viewDateStart.getDate() + 4);
             document.getElementById('week-label').innerText = `${viewDateStart.getDate()}.${viewDateStart.getMonth()+1} - ${friday.getDate()}.${friday.getMonth()+1}.${friday.getFullYear()}`;
@@ -773,9 +782,17 @@
                 const columnDateStr = formatDateStr(columnDateObj);
                 
                 const weekType = getWeekTypeForDate(columnDateObj);
-                const weekTypeLabel = weekType === 'INNY' ? 'Brak zajęć' : (weekType === 'TN' ? 'Nieparzysty (TN)' : 'Parzysty (TP)');
-                const colorMarker = weekType === 'INNY' ? '#9ca3af' : (weekType === 'TN' ? '#3b82f6' : '#10b981');
+                const specialDay = checkSpecialDay(columnDateStr);
                 
+                const weekTypeLabel = specialDay ? specialDay.type : (weekType === 'INNY' ? 'Brak zajęć' : (weekType === 'TN' ? 'Nieparzysty (TN)' : 'Parzysty (TP)'));
+                
+                // Kolory wskaźników
+                let colorMarker = '#9ca3af'; // Domyślny / Inny
+                if (specialDay && specialDay.type === 'WOLNE') colorMarker = '#3b82f6'; // Niebieski dla wolnego
+                else if (specialDay && specialDay.type === 'SESJA') colorMarker = '#f59e0b'; // Pomarańczowy dla sesji
+                else if (weekType === 'TN') colorMarker = '#3b82f6';
+                else if (weekType === 'TP') colorMarker = '#10b981';
+
                 const isToday = (columnDateStr === todayStr);
 
                 column.innerHTML = `
@@ -786,31 +803,26 @@
                     </div>
                 `;
 
-                let classesRendered = 0;
-
-                if (weekType !== 'INNY') {
+                // Sprawdzanie czy to dzień wolny / sesja
+                if (specialDay) {
+                    if (specialDay.type === 'WOLNE') {
+                        column.innerHTML += `<div class="empty-day" style="color: #3b82f6; font-size: 1.1rem; margin-top: 40px; font-weight: bold;"><i class="fas fa-umbrella-beach fa-2x" style="margin-bottom: 15px; display:block;"></i>${specialDay.title}</div>`;
+                    } else if (specialDay.type === 'SESJA') {
+                        column.innerHTML += `<div class="empty-day" style="color: #f59e0b; font-size: 1.1rem; margin-top: 40px; font-weight: bold;"><i class="fas fa-book-reader fa-2x" style="margin-bottom: 15px; display:block;"></i>${specialDay.title}</div>`;
+                    }
+                } 
+                // Renderowanie normalnych zajęć
+                else if (weekType !== 'INNY') {
                     let classes = scheduleData[weekType][i];
+                    let classesRendered = 0;
                     
-                    // Sortowanie po godzinie
                     classes.sort((a, b) => a.start.localeCompare(b.start));
                     
                     classes.forEach((cls, classIndex) => {
-                        // 1. Filtr specyficznych dat
-                        if (cls.specificDates && cls.specificDates.length > 0 && !cls.specificDates.includes(columnDateStr)) {
-                            return; 
-                        }
-
-                        // 2. Filtr wyszukiwarki
-                        if (searchTerm && 
-                            !cls.subject.toLowerCase().includes(searchTerm) && 
-                            !(cls.room && cls.room.toLowerCase().includes(searchTerm)) && 
-                            !(cls.lecturer && cls.lecturer.toLowerCase().includes(searchTerm))) {
-                            return; 
-                        }
+                        if (cls.specificDates && cls.specificDates.length > 0 && !cls.specificDates.includes(columnDateStr)) return; 
+                        if (searchTerm && !cls.subject.toLowerCase().includes(searchTerm) && !(cls.room && cls.room.toLowerCase().includes(searchTerm)) && !(cls.lecturer && cls.lecturer.toLowerCase().includes(searchTerm))) return; 
 
                         classesRendered++;
-
-                        // 3. Sprawdzanie czy zajęcia trwają TERAZ
                         let isOngoing = false; 
                         let progressPercent = 0;
                         if (isToday) {
@@ -831,25 +843,15 @@
                                 <button class="action-btn" onclick="editClass('${weekType}', ${i}, ${classIndex}, event)" title="Edytuj"><i class="fas fa-pencil-alt"></i></button>
                                 <button class="action-btn btn-del" onclick="deleteClass('${weekType}', ${i}, ${classIndex}, event)" title="Usuń"><i class="fas fa-trash"></i></button>
                             </div>
-                            
                             <span class="type-badge tag-${cls.type || 'inne'}">${typeLabels[cls.type || 'inne']}</span>
-                            
-                            <div class="class-time">
-                                <i class="far fa-clock"></i> ${cls.start} - ${cls.end} 
-                                ${isOngoing ? '<span style="color:#10b981; font-size:0.8rem; margin-left:5px;">(Trwa)</span>' : ''}
-                            </div>
-                            
+                            <div class="class-time"><i class="far fa-clock"></i> ${cls.start} - ${cls.end} ${isOngoing ? '<span style="color:#10b981; font-size:0.8rem; margin-left:5px;">(Trwa)</span>' : ''}</div>
                             <div class="class-subject" onclick="toggleNotes('${weekType}', ${i}, ${classIndex})">${cls.subject}</div>
-                            
                             <div class="class-details" onclick="toggleNotes('${weekType}', ${i}, ${classIndex})">
                                 ${cls.room ? `<span><i class="fas fa-map-marker-alt"></i> Sala: ${cls.room}</span>` : ''}
                                 ${cls.lecturer ? `<span><i class="fas fa-user-tie"></i> ${cls.lecturer}</span>` : ''}
                             </div>
-                            
                             ${cls.specificDates && cls.specificDates.length > 0 ? `<span class="special-term"><i class="fas fa-exclamation-circle"></i> Zajęcia terminowe</span>` : ''}
-                            
                             <div class="progress-container"><div class="progress-bar" style="width: ${progressPercent}%;"></div></div>
-                            
                             <div class="notes-section" id="notes-${weekType}-${i}-${classIndex}">
                                 <textarea class="notes-textarea" id="note-input-${weekType}-${i}-${classIndex}" placeholder="Dodaj notatkę...">${cls.notes || ''}</textarea>
                                 <button class="notes-save-btn" onclick="saveNote('${weekType}', ${i}, ${classIndex}, event)">Zapisz notatkę</button>
@@ -857,9 +859,11 @@
                         `;
                         column.appendChild(card);
                     });
-                }
 
-                if (classesRendered === 0) {
+                    if (classesRendered === 0) {
+                        column.innerHTML += `<div class="empty-day">Brak zajęć w tym dniu 🎉</div>`;
+                    }
+                } else {
                     column.innerHTML += `<div class="empty-day">Brak zajęć w tym dniu 🎉</div>`;
                 }
 
@@ -867,58 +871,50 @@
             }
         }
 
-        // --- DASHBOARD (WIDGET NASTĘPNE ZAJĘCIA) ---
+        // --- DASHBOARD ---
         function updateDashboard() {
             const now = new Date();
             const todayStr = formatDateStr(now);
             const currentMins = now.getHours() * 60 + now.getMinutes();
             const weekType = getWeekTypeForDate(now);
-            const currentDayIndex = now.getDay() - 1; // 0=Pon, 4=Pt
+            const currentDayIndex = now.getDay() - 1; 
+            const specialDay = checkSpecialDay(todayStr);
             
             let nextClass = null;
 
-            if (weekType !== 'INNY' && currentDayIndex >= 0 && currentDayIndex <= 4) {
+            if (!specialDay && weekType !== 'INNY' && currentDayIndex >= 0 && currentDayIndex <= 4) {
                 let todayClasses = scheduleData[weekType][currentDayIndex];
-                
-                // Sortujemy po godzinie
                 let sortedClasses = [...todayClasses].sort((a, b) => a.start.localeCompare(b.start));
                 
                 for(let cls of sortedClasses) {
-                    // Filtrujemy zajęcia terminowe
-                    if (cls.specificDates && cls.specificDates.length > 0 && !cls.specificDates.includes(todayStr)) {
-                        continue;
-                    }
-
+                    if (cls.specificDates && cls.specificDates.length > 0 && !cls.specificDates.includes(todayStr)) continue;
                     const startMin = parseInt(cls.start.split(':')[0])*60 + parseInt(cls.start.split(':')[1]);
-                    if(startMin > currentMins) { 
-                        nextClass = cls; 
-                        break; 
-                    }
+                    if(startMin > currentMins) { nextClass = cls; break; }
                 }
             }
             
             const widget = document.getElementById('next-class-widget');
             const widgetText = document.getElementById('next-class-text');
 
-            if (nextClass) {
+            if (specialDay) {
                 widget.style.display = 'flex';
-                widgetText.innerText = `${nextClass.subject} o ${nextClass.start} (Sala: ${nextClass.room || 'Brak'})`;
+                widget.style.background = specialDay.type === 'WOLNE' ? '#3b82f6' : '#f59e0b';
+                widget.innerHTML = `<i class="${specialDay.type === 'WOLNE' ? 'fas fa-umbrella-beach' : 'fas fa-book-reader'}"></i><div class="widget-content"><h3>Dzisiaj</h3><p>${specialDay.title}</p></div>`;
+            } else if (nextClass) {
+                widget.style.display = 'flex';
+                widget.style.background = 'linear-gradient(135deg, var(--primary), var(--primary-hover))';
+                widget.innerHTML = `<i class="fas fa-rocket"></i><div class="widget-content"><h3>Następne zajęcia</h3><p>${nextClass.subject} o ${nextClass.start} (Sala: ${nextClass.room || 'Brak'})</p></div>`;
             } else { 
                 widget.style.display = 'none'; 
             }
         }
 
         // --- OBSŁUGA NOTATEK ---
-        function toggleNotes(weekType, dayIndex, classIndex) {
-            document.getElementById(`notes-${weekType}-${dayIndex}-${classIndex}`).classList.toggle('active');
-        }
-
+        function toggleNotes(weekType, dayIndex, classIndex) { document.getElementById(`notes-${weekType}-${dayIndex}-${classIndex}`).classList.toggle('active'); }
         function saveNote(weekType, dayIndex, classIndex, event) {
             event.stopPropagation();
-            const noteContent = document.getElementById(`note-input-${weekType}-${dayIndex}-${classIndex}`).value;
-            scheduleData[weekType][dayIndex][classIndex].notes = noteContent;
-            saveData();
-            alert("Notatka zapisana pomyślnie!");
+            scheduleData[weekType][dayIndex][classIndex].notes = document.getElementById(`note-input-${weekType}-${dayIndex}-${classIndex}`).value;
+            saveData(); alert("Notatka zapisana pomyślnie!");
         }
 
         // --- MODAL DODAWANIA I EDYCJI ---
@@ -926,232 +922,113 @@
             document.getElementById('modalTitle').innerText = "Dodaj zajęcia";
             document.getElementById('saveBtn').innerText = "Zapisz";
             document.getElementById('editClassIndex').value = "-1";
-            
-            // Czyszczenie formularza
-            document.getElementById('timeStart').value = ""; 
-            document.getElementById('timeEnd').value = "";
-            document.getElementById('subject').value = ""; 
-            document.getElementById('room').value = "";
-            document.getElementById('lecturer').value = ""; 
-            document.getElementById('classType').value = "inne";
+            document.getElementById('timeStart').value = ""; document.getElementById('timeEnd').value = "";
+            document.getElementById('subject').value = ""; document.getElementById('room').value = "";
+            document.getElementById('lecturer').value = ""; document.getElementById('classType').value = "inne";
             document.getElementById('specificDates').value = "";
-            
             document.getElementById('classModal').style.display = 'flex';
         }
 
         function editClass(week, dayIndex, classIndex, event) {
             event.stopPropagation();
             const cls = scheduleData[week][dayIndex][classIndex];
-            
             document.getElementById('modalTitle').innerText = "Edytuj zajęcia";
             document.getElementById('saveBtn').innerText = "Aktualizuj";
-            
-            document.getElementById('weekTypeSelect').value = week;
-            document.getElementById('daySelect').value = dayIndex;
-            document.getElementById('editDayIndex').value = dayIndex;
-            document.getElementById('editClassIndex').value = classIndex;
-            
-            document.getElementById('timeStart').value = cls.start;
-            document.getElementById('timeEnd').value = cls.end;
-            document.getElementById('subject').value = cls.subject;
-            document.getElementById('room').value = cls.room || "";
-            document.getElementById('lecturer').value = cls.lecturer || "";
-            document.getElementById('classType').value = cls.type || "inne";
-            
-            // Konwersja tablicy dat na string do wyświetlenia
+            document.getElementById('weekTypeSelect').value = week; document.getElementById('daySelect').value = dayIndex;
+            document.getElementById('editDayIndex').value = dayIndex; document.getElementById('editClassIndex').value = classIndex;
+            document.getElementById('timeStart').value = cls.start; document.getElementById('timeEnd').value = cls.end;
+            document.getElementById('subject').value = cls.subject; document.getElementById('room').value = cls.room || "";
+            document.getElementById('lecturer').value = cls.lecturer || ""; document.getElementById('classType').value = cls.type || "inne";
             document.getElementById('specificDates').value = cls.specificDates ? cls.specificDates.join(', ') : "";
-            
             document.getElementById('classModal').style.display = 'flex';
         }
 
-        function closeModal() { 
-            document.getElementById('classModal').style.display = 'none'; 
-        }
+        function closeModal() { document.getElementById('classModal').style.display = 'none'; }
 
         function saveClass() {
-            const weekType = document.getElementById('weekTypeSelect').value;
-            const day = document.getElementById('daySelect').value;
-            const editIndex = parseInt(document.getElementById('editClassIndex').value);
-            const oldDayIndex = parseInt(document.getElementById('editDayIndex').value);
-
-            // Przetwarzanie specyficznych dat wpisanych po przecinku
+            const weekType = document.getElementById('weekTypeSelect').value; const day = document.getElementById('daySelect').value;
+            const editIndex = parseInt(document.getElementById('editClassIndex').value); const oldDayIndex = parseInt(document.getElementById('editDayIndex').value);
             const datesInput = document.getElementById('specificDates').value;
-            let parsedDates = [];
-            if(datesInput.trim() !== "") {
-                parsedDates = datesInput.split(',').map(d => d.trim());
-            }
+            let parsedDates = []; if(datesInput.trim() !== "") parsedDates = datesInput.split(',').map(d => d.trim());
 
             const classData = {
-                start: document.getElementById('timeStart').value, 
-                end: document.getElementById('timeEnd').value,
-                subject: document.getElementById('subject').value, 
-                type: document.getElementById('classType').value,
-                room: document.getElementById('room').value, 
-                lecturer: document.getElementById('lecturer').value,
-                specificDates: parsedDates,
-                notes: editIndex !== -1 ? scheduleData[weekType][oldDayIndex][editIndex].notes : "" // Zachowaj notatki przy edycji
+                start: document.getElementById('timeStart').value, end: document.getElementById('timeEnd').value,
+                subject: document.getElementById('subject').value, type: document.getElementById('classType').value,
+                room: document.getElementById('room').value, lecturer: document.getElementById('lecturer').value,
+                specificDates: parsedDates, notes: editIndex !== -1 ? scheduleData[weekType][oldDayIndex][editIndex].notes : ""
             };
 
-            if(!classData.start || !classData.end || !classData.subject) { 
-                alert("Proszę wypełnić wymagane pola: Czas i Przedmiot!"); 
-                return; 
-            }
+            if(!classData.start || !classData.end || !classData.subject) { alert("Wypełnij wymagane pola!"); return; }
 
-            if (editIndex === -1) {
-                // Dodawanie nowych
-                scheduleData[weekType][day].push(classData);
-            } else {
-                // Edycja - jeśli przenieśliśmy dzień/tydzień trzeba usunąć ze starego miejsca
-                const isEditingTitle = document.getElementById('modalTitle').innerText === "Edytuj zajęcia";
-                if(isEditingTitle) {
-                     // W profesjonalnej implementacji znaleźlibyśmy stary typ tygodnia, 
-                     // tu dla uproszczenia (bo zapisujemy tylko w otwartym widoku) zakładamy że jesteśmy w tym samym
-                     // Omijamy zaawansowaną migrację między tygodniami dla czytelności kodu i po prostu nadpisujemy
-                     scheduleData[weekType][day][editIndex] = classData;
-                }
-            }
+            if (editIndex === -1) scheduleData[weekType][day].push(classData);
+            else if(document.getElementById('modalTitle').innerText === "Edytuj zajęcia") scheduleData[weekType][day][editIndex] = classData;
 
-            saveData(); 
-            closeModal(); 
-            renderCalendar();
-            updateDashboard();
+            saveData(); closeModal(); renderCalendar(); updateDashboard();
         }
 
         function deleteClass(weekType, dayIndex, classIndex, event) {
             event.stopPropagation();
-            if(confirm("Czy na pewno chcesz usunąć te zajęcia ze swojego planu?")) {
-                scheduleData[weekType][dayIndex].splice(classIndex, 1);
-                saveData(); 
-                renderCalendar();
-                updateDashboard();
-            }
+            if(confirm("Usunąć te zajęcia?")) { scheduleData[weekType][dayIndex].splice(classIndex, 1); saveData(); renderCalendar(); updateDashboard(); }
         }
 
         // --- NAWIGACJA DATAMI ---
-        function changeWeek(offset) {
-            viewDateStart.setDate(viewDateStart.getDate() + (offset * 7));
-            renderCalendar();
-        }
+        function changeWeek(offset) { viewDateStart.setDate(viewDateStart.getDate() + (offset * 7)); renderCalendar(); }
+        function jumpToDate(event) { if(event.target.value) { viewDateStart = getMonday(new Date(event.target.value)); renderCalendar(); } }
+        function jumpToToday() { viewDateStart = getMonday(new Date()); document.getElementById('date-picker').value = ''; renderCalendar(); }
 
-        function jumpToDate(event) {
-            if(event.target.value) {
-                viewDateStart = getMonday(new Date(event.target.value));
-                renderCalendar();
-            }
-        }
-
-        function jumpToToday() {
-            viewDateStart = getMonday(new Date());
-            document.getElementById('date-picker').value = '';
-            renderCalendar();
-        }
-
-        // --- EKSPORT ICS (Google/Apple Calendar) ---
+        // --- EKSPORT ICS ---
         function exportICS() {
             let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//SmartPlan//Student//PL\n";
-            
-            // Generuje wydarzenia na podstawie pierwszego tygodnia dla każdego typu
-            // W profesjonalnej aplikacji generowalibyśmy osobne eventy dla każdej daty w semestrze
-            
             ['TN', 'TP'].forEach(week => {
                 const baseMonday = week === 'TN' ? new Date(tnWeeksStarts[0]) : new Date(tpWeeksStarts[0]);
-                
                 for (let day = 0; day < 5; day++) {
-                    const eventDate = new Date(baseMonday);
-                    eventDate.setDate(eventDate.getDate() + day);
+                    const eventDate = new Date(baseMonday); eventDate.setDate(eventDate.getDate() + day);
                     const dateStr = eventDate.toISOString().split('T')[0].replace(/-/g, '');
-
                     scheduleData[week][day].forEach(cls => {
                         icsContent += `BEGIN:VEVENT\nSUMMARY:${cls.subject}\nLOCATION:${cls.room || ''}\nDESCRIPTION:Prowadzący: ${cls.lecturer || ''}\nDTSTART:${dateStr}T${cls.start.replace(':','')}00\nDTEND:${dateStr}T${cls.end.replace(':','')}00\nRRULE:FREQ=WEEKLY;INTERVAL=2;UNTIL=20260630T000000Z\nEND:VEVENT\n`;
                     });
                 }
             });
-
             icsContent += "END:VCALENDAR";
             const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
-            const link = document.createElement('a'); 
-            link.href = window.URL.createObjectURL(blob);
-            link.download = 'moj_plan_zajec.ics'; 
-            link.click();
+            const link = document.createElement('a'); link.href = window.URL.createObjectURL(blob);
+            link.download = 'moj_plan_zajec.ics'; link.click();
         }
 
-        // --- UDOSTĘPNIANIE QR KODEM (ZMODYFIKOWANE DO LINKU) ---
+        // --- KOD QR ---
         function showQRCode() {
             document.getElementById('qrModal').style.display = 'flex';
-            const qrContainer = document.getElementById('qrcode');
-            qrContainer.innerHTML = ''; 
-            
-            // Link do Twojej aplikacji (usuwamy hashe i inne parametry jeśli są)
-            const appUrl = window.location.href.split('#')[0]; 
-            
-            new QRCode(qrContainer, { 
-                text: appUrl, 
-                width: 200, 
-                height: 200, 
-                colorDark : "#1f2937", 
-                colorLight : "#ffffff", 
-                correctLevel : QRCode.CorrectLevel.H 
-            });
+            const qrContainer = document.getElementById('qrcode'); qrContainer.innerHTML = ''; 
+            new QRCode(qrContainer, { text: window.location.href.split('#')[0], width: 200, height: 200, colorDark : "#1f2937", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
         }
 
-        // --- 🐱 EASTER EGG: BIEGNĄCY KOT ---
+        // --- EASTER EGG ---
         function releaseTheCat() {
             let cat = document.getElementById('nyan-cat');
-            
-            // Jeśli kot jeszcze nie istnieje w dokumencie, tworzymy go
             if (!cat) {
-                cat = document.createElement('img');
-                cat.id = 'nyan-cat';
+                cat = document.createElement('img'); cat.id = 'nyan-cat';
                 cat.src = 'https://media1.giphy.com/media/sIIhZliB2McAo/giphy.gif';
-                cat.style.position = 'fixed';
-                cat.style.bottom = '100px';
-                cat.style.left = '-200px'; 
-                cat.style.width = '150px';
-                cat.style.zIndex = '9999'; 
-                cat.style.pointerEvents = 'none'; 
-                cat.style.transition = 'left 4s linear'; 
+                cat.style.position = 'fixed'; cat.style.bottom = '100px'; cat.style.left = '-200px'; 
+                cat.style.width = '150px'; cat.style.zIndex = '9999'; cat.style.pointerEvents = 'none'; 
                 document.body.appendChild(cat);
             }
-            
-            cat.style.transition = 'none';
-            cat.style.left = '-200px';
-            cat.style.display = 'block';
-            
-            setTimeout(() => {
-                cat.style.transition = 'left 4s linear';
-                cat.style.left = window.innerWidth + 'px'; 
-            }, 50);
-            
-            setTimeout(() => { 
-                cat.style.display = 'none'; 
-            }, 4100);
+            cat.style.transition = 'none'; cat.style.left = '-200px'; cat.style.display = 'block';
+            setTimeout(() => { cat.style.transition = 'left 4s linear'; cat.style.left = window.innerWidth + 'px'; }, 50);
+            setTimeout(() => { cat.style.display = 'none'; }, 4100);
         }
 
-        // --- TRYB CIEMNY ---
+        // --- TRYB CIEMNY I START ---
         function toggleDarkMode() {
-            document.body.classList.toggle('dark-mode'); 
-            const icon = document.getElementById('theme-icon');
-            if(document.body.classList.contains('dark-mode')) { 
-                icon.classList.replace('fa-moon', 'fa-sun'); 
-                localStorage.setItem('theme', 'dark'); 
-            } else { 
-                icon.classList.replace('fa-sun', 'fa-moon'); 
-                localStorage.setItem('theme', 'light'); 
-            }
+            document.body.classList.toggle('dark-mode'); const icon = document.getElementById('theme-icon');
+            if(document.body.classList.contains('dark-mode')) { icon.classList.replace('fa-moon', 'fa-sun'); localStorage.setItem('theme', 'dark'); } 
+            else { icon.classList.replace('fa-sun', 'fa-moon'); localStorage.setItem('theme', 'light'); }
         }
         
-        // --- START APLIKACJI ---
         if(localStorage.getItem('theme') === 'dark') toggleDarkMode();
-        renderCalendar();
-        updateDashboard();
-        
-        // Aktualizacja postępu co 60 sekund
-        setInterval(() => {
-            renderCalendar();
-            updateDashboard();
-        }, 60000);
-
+        renderCalendar(); updateDashboard();
+        setInterval(() => { renderCalendar(); updateDashboard(); }, 60000);
     </script>
 </body>
 </html>
+
 
