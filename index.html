@@ -710,7 +710,7 @@
             },
             "TP": {
                 0: [ 
-                    { start: "09:45", end: "13:00", subject: "Sieci i wizualizacja", type: "lab", room: "114t", lecturer: "dr hab. W.Stankiewicz", specificDates: [], notes: "" }, 
+                    { start: "09:45", end: "13:00", subject: "Sieci i wizualizacja", type: "lab", room: "113t", lecturer: "dr hab. W.Stankiewicz", specificDates: [], notes: "" }, 
                     { start: "15:00", end: "18:00", subject: "Seminarium", type: "seminarium", room: "113t", lecturer: "dr R.Roszak", specificDates: [], notes: "" } 
                 ],
                 1: [ 
@@ -727,7 +727,17 @@
         };
 
         let scheduleData = JSON.parse(localStorage.getItem('smartPlanData')) || defaultData;
-        let viewDateStart = getMonday(new Date()); 
+      // Inteligentne wykrywanie weekendu
+function getSmartStartMonday() {
+    let now = new Date();
+    let day = now.getDay();
+    // Jeśli sobota (6) -> przeskocz 2 dni do poniedziałku
+    if (day === 6) now.setDate(now.getDate() + 2);
+    // Jeśli niedziela (0) -> przeskocz 1 dzień do poniedziałku
+    if (day === 0) now.setDate(now.getDate() + 1);
+    return getMonday(now);
+}
+let viewDateStart = getSmartStartMonday();
 
         function saveData() { localStorage.setItem('smartPlanData', JSON.stringify(scheduleData)); }
 
@@ -974,7 +984,11 @@
         // --- NAWIGACJA DATAMI ---
         function changeWeek(offset) { viewDateStart.setDate(viewDateStart.getDate() + (offset * 7)); renderCalendar(); }
         function jumpToDate(event) { if(event.target.value) { viewDateStart = getMonday(new Date(event.target.value)); renderCalendar(); } }
-        function jumpToToday() { viewDateStart = getMonday(new Date()); document.getElementById('date-picker').value = ''; renderCalendar(); }
+        function jumpToToday() { 
+    viewDateStart = getSmartStartMonday(); 
+    document.getElementById('date-picker').value = ''; 
+    renderCalendar(); 
+}
 
         // --- EKSPORT ICS ---
         function exportICS() {
