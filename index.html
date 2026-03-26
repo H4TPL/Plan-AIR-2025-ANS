@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Plan v3.7 PRO Cloud</title>
+    <title>Smart Plan v3.8 PRO Cloud</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -95,18 +95,28 @@
         .card-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 6px; } .action-btn { background: var(--bg-color); color: var(--text-main); border: 1px solid var(--toggle-bg); border-radius: 8px; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.1); } .action-btn:hover { background: var(--primary); color: white; border-color: var(--primary); transform: scale(1.1); }
         .picker-day { padding: 10px 5px; border-radius: 8px; cursor: pointer; font-size: 0.95rem; transition: 0.2s; color: var(--text-main); } .picker-day:hover { background-color: var(--toggle-bg); } .picker-day.current { background-color: var(--primary); color: white; font-weight: bold; box-shadow: 0 4px 10px rgba(0,0,0,0.2); } .picker-day.muted { color: var(--text-muted); opacity: 0.4; } .picker-day.selected { box-shadow: inset 0 0 0 2px var(--primary); color: var(--primary); font-weight: bold; }
 
-        .site-footer { margin-top: 40px; padding: 25px 20px; text-align: center; border-top: 1px solid var(--toggle-bg); color: var(--text-muted); font-size: 0.85rem; display: flex; flex-direction: column; gap: 12px; align-items: center; background: var(--bg-color); } .footer-content { display: flex; flex-direction: column; gap: 5px; align-items: center; } .footer-brand { font-weight: bold; font-size: 1rem; color: var(--text-main); display: flex; align-items: center; gap: 8px;} .version-badge { background: var(--toggle-bg); padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 800; color: var(--text-main); } .footer-links { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-top: 5px; } .footer-links a { color: var(--primary); text-decoration: none; font-weight: 600; transition: 0.2s; cursor: pointer; } .footer-links a:hover { text-decoration: underline; color: var(--primary-hover); }
+        .site-footer { margin-top: 40px; padding: 25px 20px; text-align: center; border-top: 1px solid var(--toggle-bg); color: var(--text-muted); font-size: 0.85rem; display: flex; flex-direction: column; gap: 12px; align-items: center; background: var(--bg-color); padding-bottom: 90px; } .footer-content { display: flex; flex-direction: column; gap: 5px; align-items: center; } .footer-brand { font-weight: bold; font-size: 1rem; color: var(--text-main); display: flex; align-items: center; gap: 8px;} .version-badge { background: var(--toggle-bg); padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; font-weight: 800; color: var(--text-main); } .footer-links { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; margin-top: 5px; } .footer-links a { color: var(--primary); text-decoration: none; font-weight: 600; transition: 0.2s; cursor: pointer; } .footer-links a:hover { text-decoration: underline; color: var(--primary-hover); }
         .changelog-item { border-left: 3px solid var(--primary); padding-left: 15px; margin-bottom: 20px; position: relative; } .changelog-item::before { content: ''; position: absolute; left: -7px; top: 0; width: 11px; height: 11px; border-radius: 50%; background: var(--primary); } .changelog-version { font-weight: 900; font-size: 1.1rem; color: var(--text-main); margin-bottom: 5px; display: flex; align-items: center; gap: 8px; } .changelog-date { font-size: 0.75rem; color: var(--text-muted); font-weight: normal; background: var(--toggle-bg); padding: 2px 8px; border-radius: 10px;} .changelog-item ul { padding-left: 15px; margin-top: 5px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6; }
 
         .grade-input-wrapper { display: flex; gap: 10px; align-items: center; }
         .todo-global-item { background: var(--bg-color); padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; }
         .chat-box { max-height: 150px; overflow-y: auto; background: var(--toggle-bg); border-radius: 8px; padding: 10px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .chat-bubble { padding: 6px 10px; border-radius: 10px; max-width: 90%; font-size: 0.75rem; }
+        .chat-bubble { padding: 6px 10px; border-radius: 10px; max-width: 90%; font-size: 0.75rem; word-wrap: break-word; }
         .chat-bubble.me { background: var(--primary); color: white; align-self: flex-end; }
-        .chat-bubble.other { background: var(--card-bg); border: 1px solid var(--text-muted); align-self: flex-start; }
+        .chat-bubble.other { background: var(--card-bg); border: 1px solid var(--toggle-bg); align-self: flex-start; }
+
+        /* GLOBAL CHAT STYLES */
+        #global-chat-btn { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0, 0.3); z-index: 9000; transition: 0.3s; }
+        #global-chat-btn:hover { transform: scale(1.1); background: var(--primary-hover); }
+        #global-chat-window { display: none; position: fixed; bottom: 90px; right: 20px; width: 340px; height: 450px; background: var(--card-bg); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9000; flex-direction: column; overflow: hidden; border: 1px solid var(--toggle-bg); }
+        #global-chat-header { background: var(--primary); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
+        #global-chat-header i { cursor: pointer; font-size: 1.2rem; }
+        #global-chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: var(--bg-color); }
+        #global-chat-input-area { padding: 10px; background: var(--card-bg); border-top: 1px solid var(--toggle-bg); display: flex; gap: 8px; }
+        #global-chat-input { flex: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid var(--toggle-bg); outline: none; font-size: 0.9rem; background: var(--bg-color); color: var(--text-main); }
 
         @keyframes bounceIn { 0% { bottom: -50px; opacity: 0; } 60% { bottom: 30px; opacity: 1; } 100% { bottom: 20px; } } @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px) rotate(-5deg); } 75% { transform: translateX(10px) rotate(5deg); } } @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } } @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
-        @media (max-width: 1024px) { .calendar-container { grid-template-columns: repeat(3, 1fr); } } @media (max-width: 768px) { .calendar-container { grid-template-columns: 1fr; } .top-bar { flex-direction: column; align-items: flex-start; } .controls { width: 100%; justify-content: space-between; } .search-bar { width: 100%; } #next-class-widget { flex-direction: column; text-align: center; } .widget-left { flex-direction: column; } .expanded-actions { grid-template-columns: 1fr; } .btn-cancel-class { grid-column: span 1; } }
+        @media (max-width: 1024px) { .calendar-container { grid-template-columns: repeat(3, 1fr); } } @media (max-width: 768px) { .calendar-container { grid-template-columns: 1fr; } .top-bar { flex-direction: column; align-items: flex-start; } .controls { width: 100%; justify-content: space-between; } .search-bar { width: 100%; } #next-class-widget { flex-direction: column; text-align: center; } .widget-left { flex-direction: column; } .expanded-actions { grid-template-columns: 1fr; } .btn-cancel-class { grid-column: span 1; } #global-chat-window { width: calc(100vw - 40px); bottom: 85px; right: 20px; } #global-chat-btn { bottom: 20px; right: 20px; width: 55px; height: 55px; font-size: 1.5rem; } }
     </style>
 </head>
 <body>
@@ -118,7 +128,7 @@
         <button onclick="document.getElementById('mute-alert-overlay').style.display='none'">ZROBIONE</button>
     </div>
 
-    <div id="update-banner" onclick="window.location.reload(true)">
+    <div id="update-banner" onclick="applyUpdate()">
         <i class="fas fa-sync-alt"></i> Dostępna aktualizacja! Kliknij, aby odświeżyć.
     </div>
 
@@ -211,7 +221,7 @@
 
     <footer class="site-footer">
         <div class="footer-content">
-            <div class="footer-brand"><i class="fas fa-graduation-cap"></i> Smart Plan <span class="version-badge">v3.7 PRO Cloud</span></div>
+            <div class="footer-brand"><i class="fas fa-graduation-cap"></i> Smart Plan <span class="version-badge">v3.8 PRO</span></div>
             <div>Stworzone z ❤️ dla inżynierów AiR</div>
         </div>
         <div class="footer-links">
@@ -221,21 +231,53 @@
         </div>
     </footer>
 
+    <div id="global-chat-btn" onclick="toggleGlobalChat()">
+        <i class="fas fa-comments"></i>
+    </div>
+    
+    <div id="global-chat-window">
+        <div id="global-chat-header">
+            <span style="display:flex; align-items:center; gap:8px;"><i class="fas fa-globe"></i> Globalne Forum AiR</span>
+            <i class="fas fa-times" onclick="toggleGlobalChat()"></i>
+        </div>
+        <div id="global-chat-messages">
+            <div style="text-align:center; padding:10px; font-size:0.8rem; color:var(--text-muted);">Kliknij przycisk, aby połączyć się z serwerem...</div>
+        </div>
+        <div id="global-chat-input-area">
+            <input type="text" id="global-chat-input" placeholder="Napisz do wszystkich na roku..." onkeypress="if(event.key === 'Enter') sendGlobalChat()">
+            <button class="btn" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; justify-content: center;" onclick="sendGlobalChat()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
     <div class="modal" id="classModal"><div class="modal-content"><h2 id="modalTitle">Dodaj zajęcia</h2><input type="hidden" id="editClassIndex" value="-1"><input type="hidden" id="editDayIndex" value="-1"><div style="display: flex; gap: 15px; margin-bottom: 15px;"><div style="flex: 1;"><label>Typ tyg.</label><select id="weekTypeSelect"><option value="TN">Nieparzysty (TN)</option><option value="TP">Parzysty (TP)</option></select></div><div style="flex: 1;"><label>Dzień</label><select id="daySelect"><option value="0">Poniedziałek</option><option value="1">Wtorek</option><option value="2">Środa</option><option value="3">Czwartek</option><option value="4">Piątek</option></select></div></div><div style="margin-bottom: 15px;"><label>Typ (Kolor)</label><select id="classType"><option value="wyklad">Wykład</option><option value="cwiczenia">Ćwiczenia</option><option value="lab">Laboratorium</option><option value="projekt">Projekt</option><option value="seminarium">Seminarium</option><option value="inne">Inne</option></select></div><div style="display: flex; gap: 15px; margin-bottom: 15px;"><div style="flex: 1;"><label>Od</label><input type="time" id="timeStart" required></div><div style="flex: 1;"><label>Do</label><input type="time" id="timeEnd" required></div></div><div style="margin-bottom: 15px;"><label>Przedmiot</label><input type="text" id="subject" placeholder="np. Robotyka" required></div><div style="margin-bottom: 15px;"><label>Sala / Prowadzący</label><div style="display: flex; gap: 10px;"><input type="text" id="room" style="width: 35%;" placeholder="Sala"><input type="text" id="lecturer" style="width: 65%;" placeholder="Wykładowca"></div></div><div style="margin-bottom: 15px;"><label>Tylko wybrane daty (Opcjonalnie)</label><input type="text" id="specificDates" placeholder="np. 2026-03-09, 2026-03-23"></div><div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;"><button class="btn btn-outline" onclick="closeModal()">Anuluj</button><button class="btn" onclick="saveClass()" id="saveBtn">Zapisz</button></div></div></div>
     <div class="modal" id="customDatePickerModal" onclick="closeCustomDatePicker()"><div class="modal-content" onclick="event.stopPropagation()" style="max-width: 350px; padding: 20px;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><button class="btn-icon btn-outline" style="padding: 8px;" onclick="changePickerMonth(-1)"><i class="fas fa-chevron-left"></i></button><h3 id="pickerMonthYear" style="color: var(--primary); margin: 0;">Miesiąc</h3><button class="btn-icon btn-outline" style="padding: 8px;" onclick="changePickerMonth(1)"><i class="fas fa-chevron-right"></i></button></div><div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.8rem; font-weight: bold; color: var(--text-muted); margin-bottom: 10px;"><div>Pn</div><div>Wt</div><div>Śr</div><div>Cz</div><div>Pt</div><div>Sb</div><div>Nd</div></div><div id="pickerDaysGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;"></div><div style="margin-top: 20px; text-align: center;"><button class="btn btn-outline" style="width: 100%;" onclick="jumpToToday(); closeCustomDatePicker();">Wróć do dzisiaj</button></div></div></div>
     <div class="modal" id="qrModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="text-align: center;"><h2>Zeskanuj plan</h2><p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Aparat w telefonie otworzy ten plan.</p><div id="qrcode" style="display: inline-block; background: white; padding: 15px; border-radius: 10px; margin: 0 auto;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('qrModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="bugModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--danger);"><i class="fas fa-bug"></i> Zgłoś Błąd</h2><textarea id="bugDescription" class="notes-textarea" placeholder="Napisz tutaj, co poszło nie tak..." style="min-height: 120px; font-size: 0.95rem; padding: 10px;"></textarea><div style="display: flex; gap: 10px; margin-top: 15px;"><button class="btn btn-outline" style="flex: 1;" onclick="document.getElementById('bugModal').style.display='none'">Anuluj</button><button class="btn" style="flex: 1; background: var(--danger); border-color: var(--danger);" onclick="sendBugReport()">Wyślij</button></div></div></div>
-    <div class="modal" id="changelogModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-rocket"></i> Historia Aktualizacji</h2><div style="max-height: 55vh; overflow-y: auto; padding-right: 15px; border-left: 2px solid var(--toggle-bg); padding-left: 10px; margin-left: 5px;"><div class="changelog-item"><div class="changelog-version">v3.7 PRO <span class="changelog-date">Teraz</span></div><ul><li><strong>Cloud Sync (Chmura):</strong> Od teraz logowanie Google synchronizuje nie tylko forum, ale CAŁY TWÓJ PLAN, oceny, obecności i zadania na wszystkich urządzeniach!</li></ul></div></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('changelogModal').style.display='none'">Zamknij</button></div></div>
+    <div class="modal" id="changelogModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-rocket"></i> Historia Aktualizacji</h2><div style="max-height: 55vh; overflow-y: auto; padding-right: 15px; border-left: 2px solid var(--toggle-bg); padding-left: 10px; margin-left: 5px;"><div class="changelog-item"><div class="changelog-version">v3.8 PRO <span class="changelog-date">Teraz</span></div><ul><li><strong>Globalne Forum:</strong> Dodano okienko czatu w stylu Messengera (prawy dolny róg) dla całego roku! Działa na Enter.</li><li><strong>Naprawa Pamięci (Cache):</strong> Odświeżanie strony zawsze ładuje nową wersję – usunięto błąd cofający apkę w przeszłość do wersji 1.0!</li></ul></div></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('changelogModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="radarModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--danger);"><i class="fas fa-radar"></i> Radar Kolokwiów</h2><div id="radar-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 50vh; overflow-y: auto; padding-right: 5px;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('radarModal').style.display='none'">Biorę się za naukę!</button></div></div>
-    
     <div class="modal" id="gradesModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column;"><h2 style="color: var(--primary); margin-bottom: 5px;"><i class="fas fa-graduation-cap"></i> Średnia Ocen</h2><p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Wpisz oceny (np. 5, 4.5, 3).</p><div id="grades-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('gradesModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="globalTasksModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column;"><h2 style="color: var(--success); margin-bottom: 5px;"><i class="fas fa-tasks"></i> Zbiorcze Zadania</h2><p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Wszystkie zadania ze wszystkich przedmiotów w jednym miejscu.</p><div id="global-tasks-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('globalTasksModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="attendanceModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column;"><h2 style="color: #3b82f6; margin-bottom: 5px;"><i class="fas fa-user-check"></i> Twoja Frekwencja</h2><p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Zestawienie obecności na wszystkich przedmiotach.</p><div id="attendance-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('attendanceModal').style.display='none'">Zamknij</button></div></div>
 
     <script>
-        // 1. WERSJONOWANIE
-        const APP_VERSION = "3.7.0";
-        if (localStorage.getItem('smartPlanVersion') !== APP_VERSION) { document.getElementById('update-banner').style.display = 'block'; localStorage.setItem('smartPlanVersion', APP_VERSION); }
+        // 1. WERSJONOWANIE I NAPRAWA CACHE (GHOST PWA FIX)
+        const APP_VERSION = "3.8.0";
+        
+        // ZABICIE STAREGO SERVICE WORKERA (który cofał apkę do wersji 1.0)
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) { registration.unregister(); }
+            });
+        }
+
+        if (localStorage.getItem('smartPlanVersion') !== APP_VERSION) { 
+            document.getElementById('update-banner').style.display = 'block'; 
+        }
+
+        function applyUpdate() {
+            localStorage.setItem('smartPlanVersion', APP_VERSION);
+            window.location.reload(true);
+        }
 
         // 2. FIREBASE INIT
         const firebaseConfig = { apiKey: "AIzaSyDCg9gIaAG-dgf45R76ovT22fBSY0-eR98", authDomain: "smart-plan-air.firebaseapp.com", projectId: "smart-plan-air", storageBucket: "smart-plan-air.firebasestorage.app", messagingSenderId: "571923275689", appId: "1:571923275689:web:ed975c8aaa0ce4392f6eb8" };
@@ -402,7 +444,7 @@
                                 <div class="panel-content" id="tab-chat-${cardId}">
                                     <div class="chat-box" id="chat-box-${cardId}">Kliknij tutaj, aby połączyć się z forum...</div>
                                     <div style="display: flex; gap: 5px; margin-top: 8px;">
-                                        <input type="text" id="chat-in-${cardId}" placeholder="Napisz do grupy..." style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--toggle-bg); font-size:0.8rem;">
+                                        <input type="text" id="chat-in-${cardId}" placeholder="Napisz do grupy..." style="flex:1; padding:8px; border-radius:6px; border:1px solid var(--toggle-bg); font-size:0.8rem;" onkeypress="if(event.key === 'Enter') sendChat('${cardId}', event)">
                                         <button class="btn" style="padding:6px 12px;" onclick="sendChat('${cardId}', event)"><i class="fas fa-paper-plane"></i></button>
                                     </div>
                                 </div>
@@ -563,7 +605,8 @@
         }
 
         function sendChat(cardId, e) { 
-            e.stopPropagation(); const user = auth.currentUser; 
+            if(e) e.stopPropagation(); 
+            const user = auth.currentUser; 
             if(!user) { alert("Zaloguj się z Menu, żeby pisać na forum!"); return loginForSync(); } 
             const inp = document.getElementById(`chat-in-${cardId}`); if(!inp.value.trim()) return; 
             db.collection("chats").add({ classId: cardId, author: user.displayName, text: inp.value, timestamp: firebase.firestore.FieldValue.serverTimestamp(), uid: user.uid }).then(() => inp.value = ''); 
@@ -582,15 +625,45 @@
                 }); 
                 box.scrollTop = box.scrollHeight; 
             }, error => {
-                // Tuta wyciągamy klikalny link od Google!
-                const errorText = error.message;
-                const linkMatch = errorText.match(/https:\/\/console\.firebase\.google\.com[^\s]*/);
-                const clickableLink = linkMatch ? `<br><br><a href="${linkMatch[0]}" target="_blank" style="color: blue; text-decoration: underline;"><b>KLIKNIJ TUTAJ, ABY UTWORZYĆ INDEKS</b></a>` : '';
-
-                box.innerHTML = `<div style="text-align:center; color: var(--danger); font-size: 0.8rem; padding: 10px; word-break: break-word;">
-                    <i class="fas fa-exclamation-triangle"></i> <b>Błąd bazy:</b> ${errorText} ${clickableLink}
-                </div>`;
+                box.innerHTML = `<div style="text-align:center; color: var(--danger); font-size: 0.8rem; padding: 10px;"><i class="fas fa-exclamation-triangle"></i> Zaloguj się przez Menu, aby czytać forum.</div>`;
             }); 
+        }
+
+        // --- GLOBALNY CHAT MESSENGER ---
+        function toggleGlobalChat() {
+            const win = document.getElementById('global-chat-window');
+            if (win.style.display === 'flex') {
+                win.style.display = 'none';
+            } else {
+                win.style.display = 'flex';
+                listenGlobalChat();
+            }
+        }
+
+        let globalChatUnsubscribe = null;
+        function listenGlobalChat() {
+            const box = document.getElementById('global-chat-messages');
+            if (globalChatUnsubscribe) return;
+
+            box.innerHTML = '<div style="text-align:center; padding:10px; font-size:0.8rem; color:var(--text-muted);">Łączenie z globalną chmurą...</div>';
+            
+            globalChatUnsubscribe = db.collection("chats").where("classId", "==", "GLOBAL").orderBy("timestamp", "asc").onSnapshot(snap => { 
+                box.innerHTML = snap.empty ? '<div style="text-align:center; opacity:0.5; font-size: 0.8rem; padding: 10px;">Napisz pierwszą wiadomość do rocznika!</div>' : ''; 
+                snap.forEach(doc => { 
+                    const m = doc.data(); const isMe = m.uid === auth.currentUser?.uid; 
+                    box.innerHTML += `<div class="chat-bubble ${isMe ? 'me' : 'other'}"><div style="font-size: 0.65rem; opacity: 0.7; margin-bottom: 2px; font-weight: bold;">${m.author}</div>${m.text}</div>`; 
+                }); 
+                box.scrollTop = box.scrollHeight; 
+            }, error => {
+                box.innerHTML = `<div style="text-align:center; color: var(--danger); font-size: 0.8rem; padding: 10px;"><i class="fas fa-exclamation-triangle"></i> Zaloguj się przez Menu, aby czytać forum globalne.</div>`;
+            }); 
+        }
+
+        function sendGlobalChat() {
+            const user = auth.currentUser; 
+            if(!user) { alert("Zaloguj się z Menu, żeby pisać na forum globalnym!"); return loginForSync(); } 
+            const inp = document.getElementById(`global-chat-input`); if(!inp.value.trim()) return; 
+            db.collection("chats").add({ classId: "GLOBAL", author: user.displayName, text: inp.value, timestamp: firebase.firestore.FieldValue.serverTimestamp(), uid: user.uid }).then(() => inp.value = ''); 
         }
 
         // --- OBSŁUGA ZMIANY KONTA ---
