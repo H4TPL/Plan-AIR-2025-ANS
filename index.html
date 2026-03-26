@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Plan v5.0 PRO MAX</title>
+    <title>Smart Plan v5.1 PRO FIX</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%234f46e5'/><text y='52' x='50' fill='white' font-size='40' font-family='sans-serif' font-weight='bold' text-anchor='middle' dominant-baseline='central'>SP</text></svg>">
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -15,14 +17,7 @@
     <meta name="theme-color" content="#4f46e5" id="meta-theme-color">
 
     <style>
-        /* === STYLE GLOBALNE I MOTYWY === */
-        :root {
-            --primary: #4f46e5; --primary-hover: #4338ca; --bg-color: #f3f4f6; --card-bg: #ffffff;
-            --text-main: #1f2937; --text-muted: #6b7280; --border-radius: 16px; --card-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            --toggle-bg: #e5e7eb; --danger: #ef4444; --success: #10b981;
-            --tag-wyklad: #3b82f6; --tag-cwiczenia: #10b981; --tag-lab: #f59e0b; --tag-projekt: #8b5cf6; --tag-seminarium: #ec4899;
-        }
-
+        :root { --primary: #4f46e5; --primary-hover: #4338ca; --bg-color: #f3f4f6; --card-bg: #ffffff; --text-main: #1f2937; --text-muted: #6b7280; --border-radius: 16px; --card-shadow: 0 4px 6px rgba(0,0,0,0.05); --toggle-bg: #e5e7eb; --danger: #ef4444; --success: #10b981; --tag-wyklad: #3b82f6; --tag-cwiczenia: #10b981; --tag-lab: #f59e0b; --tag-projekt: #8b5cf6; --tag-seminarium: #ec4899; }
         body.theme-dark { --primary: #6366f1; --primary-hover: #818cf8; --bg-color: #111827; --card-bg: #1f2937; --text-main: #f9fafb; --text-muted: #9ca3af; --toggle-bg: #374151; --card-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         body.theme-matrix { --primary: #00ff00; --primary-hover: #00cc00; --bg-color: #050505; --card-bg: #0a0a0a; --text-main: #00ff00; --text-muted: #008800; --toggle-bg: #1a1a1a; --card-shadow: 0 0 10px rgba(0,255,0,0.2); font-family: 'Courier New', Courier, monospace !important; }
         body.theme-cad { --primary: #ffffff; --primary-hover: #e0e0e0; --bg-color: #0055a4; --card-bg: #004488; --text-main: #ffffff; --text-muted: #99ccff; --toggle-bg: #003366; --card-shadow: none; border-bottom: 1px solid rgba(255,255,255,0.2); background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; } body.theme-cad .btn { color: #004488; font-weight: 800; } body.theme-cad .btn-outline { color: #ffffff; border-color: #ffffff; } body.theme-cad .btn-outline:hover { background-color: #ffffff; color: #004488; }
@@ -32,14 +27,12 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
         body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; transition: background-color 0.3s, color 0.3s; overflow-x: hidden; display: flex; flex-direction: column; min-height: 100vh; }
         
-        /* --- ANIMACJE INTERFEJSU --- */
         @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes fadeUp { 0% { transform: translateY(20px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px) rotate(-5deg); } 75% { transform: translateX(10px) rotate(5deg); } } 
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
         
-        /* --- ELEMENTY GŁÓWNE --- */
         #update-banner { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--success); color: white; padding: 12px 24px; border-radius: 30px; font-weight: bold; cursor: pointer; z-index: 10000; box-shadow: 0 10px 20px rgba(16, 185, 129, 0.4); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         #mute-alert-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(239, 68, 68, 0.95); z-index: 99999; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; animation: fadeIn 0.3s; }
         #mute-alert-overlay i { font-size: 5rem; margin-bottom: 20px; animation: shake 0.5s infinite; } #mute-alert-overlay h1 { font-size: 3rem; margin-bottom: 10px; font-weight: 900; } #mute-alert-overlay button { margin-top: 30px; background: white; color: var(--danger); padding: 15px 40px; font-size: 1.5rem; border-radius: 50px; font-weight: bold; border: none; cursor: pointer; transition: 0.2s; } #mute-alert-overlay button:active { transform: scale(0.9); }
@@ -66,8 +59,7 @@
         .controls { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         .search-bar { position: relative; display: flex; align-items: center; flex: 1; min-width: 200px; } .search-bar i { position: absolute; left: 12px; color: var(--text-muted); transition: 0.2s; } .search-bar input { width: 100%; padding: 10px 10px 10px 35px; border-radius: 10px; border: 1px solid var(--toggle-bg); background: var(--card-bg); color: var(--text-main); outline: none; transition: 0.2s; } .search-bar input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); } .search-bar input:focus + i { color: var(--primary); }
         .btn { background-color: var(--primary); color: white; border: none; padding: 10px 16px; border-radius: 10px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; transition: all 0.2s; flex-shrink: 0; } 
-        .btn:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0, 0.2); } 
-        .btn:active { transform: scale(0.92); box-shadow: none; }
+        .btn:hover { background-color: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0, 0.2); } .btn:active { transform: scale(0.92); box-shadow: none; }
         .btn-outline { background-color: transparent; border: 2px solid var(--primary); color: var(--primary); } .btn-outline:hover { background-color: var(--primary); color: white; }
 
         #next-class-widget { background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: white; padding: 20px; border-radius: var(--border-radius); display: flex; align-items: center; justify-content: space-between; gap: 15px; box-shadow: 0 10px 20px rgba(0,0,0, 0.15); flex-wrap: wrap; animation: popIn 0.5s ease; }
@@ -80,7 +72,6 @@
         .calendar-nav { display: flex; align-items: center; justify-content: center; gap: 15px; background: var(--card-bg); padding: 10px 20px; border-radius: 12px; box-shadow: var(--card-shadow); width: fit-content; margin: 0 auto 20px; flex-wrap: wrap; animation: fadeUp 0.6s ease-out; }
         .calendar-nav button { background: var(--toggle-bg); border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; color: var(--text-main); transition: 0.2s; } .calendar-nav button:hover { background: var(--primary); color: white; transform: translateY(-2px); } .calendar-nav button:active { transform: scale(0.95); } .current-week-display { font-size: 1.1rem; font-weight: bold; color: var(--primary); display: flex; align-items: center; gap: 10px; } .date-picker-wrapper { position: relative; display: inline-block; cursor: pointer; }
 
-        /* GRID BLOWOUT FIX */
         .calendar-container { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 15px; flex-grow: 1; width: 100%; }
         .day-column { background: var(--card-bg); border-radius: var(--border-radius); padding: 15px; box-shadow: var(--card-shadow); min-height: 60vh; display: flex; flex-direction: column; transition: 0.3s; min-width: 0; }
         .day-title { text-align: center; font-weight: 700; font-size: 1rem; margin-bottom: 15px; color: var(--primary); padding-bottom: 10px; border-bottom: 2px solid var(--toggle-bg); position: relative; } .date-subtitle { display: block; font-size: 0.8rem; color: var(--text-muted); font-weight: normal; margin-top: 5px; }
@@ -112,7 +103,6 @@
         .panel-tabs { display: flex; gap: 10px; margin-bottom: 15px; border-bottom: 2px solid var(--toggle-bg); padding-bottom: 5px; overflow-x: auto; scrollbar-width: none; } .panel-tabs::-webkit-scrollbar { display: none; } .tab-btn { background: none; border: none; font-size: 0.8rem; font-weight: bold; color: var(--text-muted); cursor: pointer; padding: 5px 10px; border-radius: 6px; transition: 0.2s; white-space: nowrap; flex-shrink: 0; } .tab-btn.active { color: var(--primary); background: rgba(79, 70, 229, 0.1); transform: translateY(-1px); }
         .panel-content { display: none; font-size: 0.85rem; animation: fadeIn 0.2s; } .panel-content.active { display: block; }
 
-        /* UI ZADAŃ */
         .todo-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; width: 100%; transition: 0.2s; } 
         .todo-item:hover { background: rgba(0,0,0,0.02); border-radius: 6px; }
         .todo-item input[type="checkbox"] { accent-color: var(--primary); width: 18px !important; height: 18px !important; cursor: pointer; margin-top: 4px; flex-shrink: 0; transition: 0.2s; } 
@@ -126,7 +116,6 @@
         
         .tag-wyklad { background-color: var(--tag-wyklad); } .tag-cwiczenia { background-color: var(--tag-cwiczenia); } .tag-lab { background-color: var(--tag-lab); } .tag-projekt { background-color: var(--tag-projekt); } .tag-seminarium { background-color: var(--tag-seminarium); } .tag-inne { background-color: var(--text-muted); }
         
-        /* MODALE */
         .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 10000; backdrop-filter: blur(4px); padding: 15px; animation: fadeIn 0.2s; } 
         .modal-content { background: var(--card-bg); padding: 25px; border-radius: var(--border-radius); width: 100%; max-width: 450px; max-height: 85vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3); display: flex; flex-direction: column; margin: auto; animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); } 
         .modal-content h2 { margin-bottom: 20px; color: var(--primary); flex-shrink: 0; } 
@@ -155,11 +144,9 @@
         .chat-bubble.me { background: var(--primary); color: white; border-bottom-right-radius: 4px; }
         .chat-bubble.other { background: var(--card-bg); border: 1px solid var(--toggle-bg); border-bottom-left-radius: 4px; }
         
-        /* FIX KOSZA */
         .delete-msg-btn { position: absolute; top: -8px; right: -8px; background: white; color: var(--danger); border-radius: 50%; width: 22px; height: 22px; font-size: 0.75rem; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center; z-index: 10; border: 1px solid var(--toggle-bg); transition: 0.2s; }
         .delete-msg-btn:hover { background: var(--danger); color: white; transform: scale(1.2); } .delete-msg-btn:active { transform: scale(0.9); }
 
-        /* CHAT HUB (CENTRUM) STYLES */
         #global-chat-btn { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0, 0.3); z-index: 9000; transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); animation: popIn 0.6s 1s backwards; }
         #global-chat-btn:hover { transform: scale(1.1) rotate(10deg); background: var(--primary-hover); }
         #global-chat-btn:active { transform: scale(0.9); }
@@ -175,7 +162,6 @@
         .chat-hub-item { background: var(--card-bg); padding: 12px; border-radius: 10px; font-weight: bold; font-size: 0.9rem; cursor: pointer; border: 1px solid var(--toggle-bg); display: flex; align-items: center; gap: 10px; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .chat-hub-item:hover { background: var(--primary); color: white; transform: translateX(5px); box-shadow: 0 4px 10px rgba(79,70,229,0.2); }
         
-        /* DM LIST STYLES */
         .dm-user-item { display: flex; align-items: center; justify-content: space-between; background: var(--card-bg); padding: 10px; border-radius: 10px; cursor: pointer; transition: 0.2s; border: 1px solid var(--toggle-bg); margin-bottom: 8px;}
         .dm-user-item:hover { background: var(--toggle-bg); transform: translateX(3px); }
         .dm-user-info { display: flex; align-items: center; gap: 10px; }
@@ -190,7 +176,6 @@
         #global-chat-input-area { padding: 10px; background: var(--card-bg); border-top: 1px solid var(--toggle-bg); border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; display: flex; align-items: center; gap: 8px; position: relative; flex-shrink: 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.02); }
         #global-chat-input { flex: 1; min-width: 0; padding: 10px 15px; border-radius: 20px; border: 1px solid var(--toggle-bg); outline: none; font-size: 0.9rem; background: var(--bg-color); color: var(--text-main); transition: 0.2s; } #global-chat-input:focus { border-color: var(--primary); }
         
-        /* EMOJI */
         .emoji-btn { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: 0.2s; padding: 5px; flex-shrink: 0; }
         .emoji-btn:hover { color: var(--primary); transform: scale(1.1) rotate(15deg); } .emoji-btn:active { transform: scale(0.9); }
         .emoji-picker-container { display: none; position: absolute; bottom: 60px; left: 10px; background: var(--card-bg); border: 1px solid var(--toggle-bg); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: max-content; max-width: calc(100vw - 40px); padding: 10px; grid-template-columns: repeat(6, 1fr); gap: 5px; z-index: 9001; height: auto; box-sizing: border-box; animation: popIn 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform-origin: bottom left; }
@@ -204,7 +189,6 @@
         .directory-card { background: var(--bg-color); padding: 15px; border-radius: 12px; margin-bottom: 12px; border-left: 4px solid var(--primary); transition: 0.2s; animation: fadeUp 0.3s ease-out; } .directory-card:hover { transform: translateX(5px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
         .directory-item { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; padding-left: 10px; border-left: 2px solid var(--toggle-bg); }
 
-        /* ATTENDANCE */
         .att-detail-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid var(--toggle-bg); font-size: 0.85rem; transition: 0.2s; }
         .att-detail-row:hover { background: rgba(0,0,0,0.02); border-radius: 6px; }
         .att-detail-row:last-child { border-bottom: none; }
@@ -237,13 +221,10 @@
 
     <script>
         // ==========================================
-        // 🛠️ SEKCJA DLA PROGRAMISTY - KONFIGURACJA
+        // 🛠️ SEKCJA DLA PROGRAMISTY
         // ==========================================
-        
-        // 1. USTAW EMAIL ADMINA (Aby mieć uprawnienia do globalnych zmian i usuwania wiadomości)
         const ADMIN_EMAILS = ["hubertwieczorekk@gmail.com"];
 
-        // 2. KLUCZ BAZY DANYCH FIREBASE (Uważaj przy zmianach)
         const firebaseConfig = { 
             apiKey: "AIzaSyDCg9gIaAG-dgf45R76ovT22fBSY0-eR98", 
             authDomain: "smart-plan-air.firebaseapp.com", 
@@ -253,17 +234,14 @@
             appId: "1:571923275689:web:ed975c8aaa0ce4392f6eb8" 
         };
 
-        // 3. WERSJONOWANIE (Podnoś numer, aby wymusić odświeżenie na telefonach u innych)
-        const APP_VERSION = "5.0.0-SOCIAL";
+        const APP_VERSION = "5.1.0-PRO-FIX";
 
-        // 4. HARMONOGRAM SEMESTRU
         const tnWeeksStarts = ['2026-02-23', '2026-03-09', '2026-03-23', '2026-04-06', '2026-04-20', '2026-05-04', '2026-05-18', '2026-06-01'];
         const tpWeeksStarts = ['2026-03-02', '2026-03-16', '2026-03-30', '2026-04-13', '2026-04-27', '2026-05-11', '2026-05-25', '2026-06-08'];
         const freeDays = ['2026-04-03', '2026-04-06', '2026-04-07', '2026-04-08', '2026-05-01', '2026-06-04'];
         const sessionRanges = [ { start: '2026-06-15', end: '2026-06-28', title: 'Sesja Letnia 📚' }, { start: '2026-09-07', end: '2026-09-20', title: 'Sesja Poprawkowa 📝' } ];
         const semesterStart = new Date('2026-02-23').getTime(); const semesterEnd = new Date('2026-06-14').getTime();
 
-        // 5. DOMYŚLNY PLAN ZAJĘĆ (Struktura: Dni od 0=Pon, 4=Piątek)
         const defaultData = {
             "TN": {
                 0: [ { start: "12:45", end: "15:00", subject: "Przetwarzanie sygnałów", type: "lab", room: "202t", lecturer: "dr inż. A.Kubacki", specificDates: ['2026-03-09', '2026-03-23', '2026-04-20', '2026-05-04', '2026-05-18'] }, { start: "15:05", end: "19:35", subject: "Przetwarzanie sygnałów (wyk.)", type: "wyklad", room: "202t", lecturer: "dr inż. A.Kubacki", specificDates: ['2026-03-09', '2026-03-23', '2026-04-20', '2026-05-04', '2026-05-18'] } ],
@@ -278,7 +256,6 @@
                 3: [], 4: []
             }
         };
-        // ==========================================
 
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.onkeydown = function(e) {
@@ -306,8 +283,8 @@
         };
 
         const TRANSLATIONS = {
-            pl: { statsTitle: "Twoje Statystyki", avgLabel: "Średnia", attLabel: "Obecność", streakLabel: "Passa dni", settings: "Ustawienia", search: "Szukaj przedmiotu, sali...", today: "Dziś", add: "Dodaj", nextClass: "Następne zajęcia", sem: "Semestr", prev: "Poprzedni", next: "Następny", history: "Historia Aktualizacji", privacy: "Prywatność", bug: "Zgłoś Błąd", login: "Zaloguj i Synchronizuj", admin: "Panel Admina (Wnioski)", cat: "Katalog / Zaawansowane", radar: "Radar Kolokwiów", avg: "Średnia Ocen", tasks: "Zbiorcze Zadania", att: "Twoja Frekwencja", theme: "Zmień Motyw", exp: "Eksportuj Kalendarz (.ics)", share: "Udostępnij (Kod QR)", reset: "Twardy Reset Danych", hubTitle: "Centrum Komunikacji", globalChat: "Globalne Forum AiR", backHub: "Wróć do Centrum", mon: "Poniedziałek", tue: "Wtorek", wed: "Środa", thu: "Czwartek", fri: "Piątek", tn: "Nieparzysty (TN)", tp: "Parzysty (TP)", noClass: "Brak zajęć", lec: "Wykład", exe: "Ćwiczenia", lab: "Laboratorium", proj: "Projekt", sem_class: "Seminarium", other: "Inne", room: "Sala", window: "Okienko", startsIn: "Do rozpoczęcia", emptyDay: "Brak zajęć w tym dniu 🎉", footerText: "Stworzone z ❤️ dla inżynierów AiR", qrTitle: "Zeskanuj plan", qrSub: "Aparat w telefonie otworzy ten plan.", close: "Zamknij", attTitle: "Twoja Frekwencja", attSub: "Zestawienie obecności. Rozwiń, by zobaczyć szczegóły dat.", attPres: "Był(a)", attAbs: "Nie był(a)", attGeneral: "Frekwencja ogólna", attBtnPres: "Byłem", attBtnAbs: "Nie byłem", tasksTitle: "Zbiorcze Zadania", tasksSub: "Wszystkie zadania ze wszystkich przedmiotów w jednym miejscu.", gradesTitle: "Średnia Ocen", gradesSub: "Wpisz oceny (np. 5, 4.5, 3).", gradesEmpty: "Brak ocen (np. 4.5, 3)...", radarTitle: "Radar Kolokwiów", radarBtn: "Biorę się za naukę!", radarEmpty: "Czysto! Brak kolokwiów", dirTitle: "Katalog Systemowy", dirLec: "Wykładowcy", dirRoom: "Sale", tabTasks: "Zadania", tabNotes: "Notatki", tabAtt: "Obecność", tabForum: "Forum", btnMail: "Wyślij Maila", btnExamSet: "Ustaw Kolokwium", btnExamDel: "Usuń Kolokwium", btnCancel: "Odwołaj w tym dniu", btnRestore: "Przywróć zajęcia", stampCancel: "ODWOŁANE", stampCancelAdmin: "ODWOŁANE (ADMIN)", badgeExam: "KOLOKWIUM", badgeExamAdmin: "KOLOKWIUM (OGŁOSZENIE)", specificDates: "Tylko w wybrane daty", sendPlaceholder: "Napisz wiadomość...", hubEmpty: "Kliknij przycisk, aby połączyć się z serwerem...", themeLight: "Jasny", themeDark: "Ciemny", themeMatrix: "Matrix", themeCad: "Inżynier CAD", themeUwu: "UWU Anime", themeAns: "Akademia ANS", tasksEmpty: "Brak zadań! Możesz odpoczywać.", tabSubjects: "Przedmioty", tabStudents: "Studenci (DM)" },
-            en: { statsTitle: "Your Stats", avgLabel: "Average", attLabel: "Attendance", streakLabel: "Day Streak", settings: "Settings", search: "Search subjects, rooms...", today: "Today", add: "Add", nextClass: "Next Class", sem: "Semester", prev: "Previous", next: "Next", history: "Changelog", privacy: "Privacy", bug: "Report Bug", login: "Login & Sync", admin: "Admin Panel (Requests)", cat: "Directory / Advanced", radar: "Exam Radar", avg: "Grades Average", tasks: "Global Tasks", att: "Your Attendance", theme: "Change Theme", exp: "Export Calendar (.ics)", share: "Share (QR Code)", reset: "Hard Data Reset", hubTitle: "Communication Hub", globalChat: "Global AiR Forum", backHub: "Back to Hub", mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday", tn: "Odd Week (TN)", tp: "Even Week (TP)", noClass: "No classes", lec: "Lecture", exe: "Classes", lab: "Laboratory", proj: "Project", sem_class: "Seminar", other: "Other", room: "Room", window: "Free time", startsIn: "Starts in", emptyDay: "No classes today 🎉", footerText: "Made with ❤️ for AiR engineers", qrTitle: "Scan Schedule", qrSub: "Open this plan with your phone camera.", close: "Close", attTitle: "Your Attendance", attSub: "Attendance summary. Expand to see specific dates.", attPres: "Present", attAbs: "Absent", attGeneral: "Overall attendance", attBtnPres: "Present", attBtnAbs: "Absent", tasksTitle: "Global Tasks", tasksSub: "All tasks from all subjects in one place.", gradesTitle: "Grades Average", gradesSub: "Enter grades (e.g. 5, 4.5, 3).", gradesEmpty: "No grades (e.g. 4.5, 3)...", radarTitle: "Exam Radar", radarBtn: "Let's study!", radarEmpty: "All clear! No exams", dirTitle: "System Directory", dirLec: "Lecturers", dirRoom: "Rooms", tabTasks: "Tasks", tabNotes: "Notes", tabAtt: "Attendance", tabForum: "Forum", btnMail: "Send Email", btnExamSet: "Set Exam", btnExamDel: "Remove Exam", btnCancel: "Cancel Class", btnRestore: "Restore Class", stampCancel: "CANCELLED", stampCancelAdmin: "CANCELLED (ADMIN)", badgeExam: "EXAM", badgeExamAdmin: "EXAM (ANNOUNCEMENT)", specificDates: "Only on selected dates", sendPlaceholder: "Type a message...", hubEmpty: "Click the button to connect...", themeLight: "Light", themeDark: "Dark", themeMatrix: "Matrix", themeCad: "CAD Engineer", themeUwu: "UWU Anime", themeAns: "ANS Academy", tasksEmpty: "No tasks! You can relax.", tabSubjects: "Subjects", tabStudents: "Students (DM)" }
+            pl: { privacyText: "Polityka Cloud Sync: Po zalogowaniu Twoje oceny, zadania, obecności i wiadomości są zapisywane prywatnie i bezpiecznie na Twoim koncie Google Firebase.", statsTitle: "Twoje Statystyki", avgLabel: "Średnia", attLabel: "Obecność", streakLabel: "Passa dni", settings: "Ustawienia", search: "Szukaj przedmiotu, sali...", today: "Dziś", add: "Dodaj", nextClass: "Następne zajęcia", sem: "Semestr", prev: "Poprzedni", next: "Następny", history: "Historia Aktualizacji", privacy: "Prywatność", bug: "Zgłoś Błąd", login: "Zaloguj i Synchronizuj", admin: "Panel Admina (Wnioski)", cat: "Katalog / Zaawansowane", radar: "Radar Kolokwiów", avg: "Średnia Ocen", tasks: "Zbiorcze Zadania", att: "Twoja Frekwencja", theme: "Zmień Motyw", exp: "Eksportuj Kalendarz (.ics)", share: "Udostępnij (Kod QR)", reset: "Twardy Reset Danych", hubTitle: "Centrum Komunikacji", globalChat: "Globalne Forum AiR", backHub: "Wróć do Centrum", mon: "Poniedziałek", tue: "Wtorek", wed: "Środa", thu: "Czwartek", fri: "Piątek", tn: "Nieparzysty (TN)", tp: "Parzysty (TP)", noClass: "Brak zajęć", lec: "Wykład", exe: "Ćwiczenia", lab: "Laboratorium", proj: "Projekt", sem_class: "Seminarium", other: "Inne", room: "Sala", window: "Okienko", startsIn: "Do rozpoczęcia", emptyDay: "Brak zajęć w tym dniu 🎉", footerText: "Stworzone z ❤️ dla inżynierów AiR", qrTitle: "Zeskanuj plan", qrSub: "Aparat w telefonie otworzy ten plan.", close: "Zamknij", attTitle: "Twoja Frekwencja", attSub: "Zestawienie obecności. Rozwiń, by zobaczyć szczegóły dat.", attPres: "Był(a)", attAbs: "Nie był(a)", attGeneral: "Frekwencja ogólna", attBtnPres: "Byłem", attBtnAbs: "Nie byłem", tasksTitle: "Zbiorcze Zadania", tasksSub: "Wszystkie zadania ze wszystkich przedmiotów w jednym miejscu.", gradesTitle: "Średnia Ocen", gradesSub: "Wpisz oceny (np. 5, 4.5, 3).", gradesEmpty: "Brak ocen (np. 4.5, 3)...", radarTitle: "Radar Kolokwiów", radarBtn: "Biorę się za naukę!", radarEmpty: "Czysto! Brak kolokwiów", dirTitle: "Katalog Systemowy", dirLec: "Wykładowcy", dirRoom: "Sale", tabTasks: "Zadania", tabNotes: "Notatki", tabAtt: "Obecność", tabForum: "Forum", btnMail: "Wyślij Maila", btnExamSet: "Ustaw Kolokwium", btnExamDel: "Usuń Kolokwium", btnCancel: "Odwołaj w tym dniu", btnRestore: "Przywróć zajęcia", stampCancel: "ODWOŁANE", stampCancelAdmin: "ODWOŁANE (ADMIN)", badgeExam: "KOLOKWIUM", badgeExamAdmin: "KOLOKWIUM (OGŁOSZENIE)", specificDates: "Tylko w wybrane daty", sendPlaceholder: "Napisz wiadomość...", hubEmpty: "Kliknij przycisk, aby połączyć się z serwerem...", themeLight: "Jasny", themeDark: "Ciemny", themeMatrix: "Matrix", themeCad: "Inżynier CAD", themeUwu: "UWU Anime", themeAns: "Akademia ANS", tasksEmpty: "Brak zadań! Możesz odpoczywać.", tabSubjects: "Przedmioty", tabStudents: "Studenci (DM)" },
+            en: { privacyText: "Cloud Sync Policy: Your grades, tasks, attendance, and messages are privately and securely saved to your Google Firebase account upon login.", statsTitle: "Your Stats", avgLabel: "Average", attLabel: "Attendance", streakLabel: "Day Streak", settings: "Settings", search: "Search subjects, rooms...", today: "Today", add: "Add", nextClass: "Next Class", sem: "Semester", prev: "Previous", next: "Next", history: "Changelog", privacy: "Privacy", bug: "Report Bug", login: "Login & Sync", admin: "Admin Panel (Requests)", cat: "Directory / Advanced", radar: "Exam Radar", avg: "Grades Average", tasks: "Global Tasks", att: "Your Attendance", theme: "Change Theme", exp: "Export Calendar (.ics)", share: "Share (QR Code)", reset: "Hard Data Reset", hubTitle: "Communication Hub", globalChat: "Global AiR Forum", backHub: "Back to Hub", mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday", tn: "Odd Week (TN)", tp: "Even Week (TP)", noClass: "No classes", lec: "Lecture", exe: "Classes", lab: "Laboratory", proj: "Project", sem_class: "Seminar", other: "Other", room: "Room", window: "Free time", startsIn: "Starts in", emptyDay: "No classes today 🎉", footerText: "Made with ❤️ for AiR engineers", qrTitle: "Scan Schedule", qrSub: "Open this plan with your phone camera.", close: "Close", attTitle: "Your Attendance", attSub: "Attendance summary. Expand to see specific dates.", attPres: "Present", attAbs: "Absent", attGeneral: "Overall attendance", attBtnPres: "Present", attBtnAbs: "Absent", tasksTitle: "Global Tasks", tasksSub: "All tasks from all subjects in one place.", gradesTitle: "Grades Average", gradesSub: "Enter grades (e.g. 5, 4.5, 3).", gradesEmpty: "No grades (e.g. 4.5, 3)...", radarTitle: "Exam Radar", radarBtn: "Let's study!", radarEmpty: "All clear! No exams", dirTitle: "System Directory", dirLec: "Lecturers", dirRoom: "Rooms", tabTasks: "Tasks", tabNotes: "Notes", tabAtt: "Attendance", tabForum: "Forum", btnMail: "Send Email", btnExamSet: "Set Exam", btnExamDel: "Remove Exam", btnCancel: "Cancel Class", btnRestore: "Restore Class", stampCancel: "CANCELLED", stampCancelAdmin: "CANCELLED (ADMIN)", badgeExam: "EXAM", badgeExamAdmin: "EXAM (ANNOUNCEMENT)", specificDates: "Only on selected dates", sendPlaceholder: "Type a message...", hubEmpty: "Click the button to connect...", themeLight: "Light", themeDark: "Dark", themeMatrix: "Matrix", themeCad: "CAD Engineer", themeUwu: "UWU Anime", themeAns: "ANS Academy", tasksEmpty: "No tasks! You can relax.", tabSubjects: "Subjects", tabStudents: "Students (DM)" }
         };
         let currentLang = localStorage.getItem('smartPlanLang') || 'pl';
 
@@ -446,12 +423,12 @@
 
     <footer class="site-footer">
         <div class="footer-content">
-            <div class="footer-brand"><i class="fas fa-graduation-cap"></i> Smart Plan <span class="version-badge">v5.0 PRO MAX</span></div>
+            <div class="footer-brand"><i class="fas fa-graduation-cap"></i> Smart Plan <span class="version-badge">v5.1 PRO FIX</span></div>
             <div><span data-i18n="footerText">Stworzone z ❤️ dla inżynierów AiR</span></div>
         </div>
         <div class="footer-links">
             <a onclick="document.getElementById('changelogModal').style.display='flex'"><i class="fas fa-history"></i> <span data-i18n="history">Historia Aktualizacji</span></a>
-            <a onclick="alert(t('privacy'))"><i class="fas fa-user-shield"></i> <span data-i18n="privacy">Prywatność</span></a>
+            <a onclick="alert(t('privacyText'))"><i class="fas fa-user-shield"></i> <span data-i18n="privacy">Prywatność</span></a>
             <a onclick="openBugModal()"><i class="fas fa-bug"></i> <span data-i18n="bug">Zgłoś Błąd</span></a>
         </div>
     </footer>
@@ -496,7 +473,7 @@
     <div class="modal" id="customDatePickerModal" onclick="closeCustomDatePicker()"><div class="modal-content" onclick="event.stopPropagation()" style="max-width: 350px; padding: 20px;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><button class="btn-icon btn-outline" style="padding: 8px; flex-shrink: 0;" onclick="changePickerMonth(-1)"><i class="fas fa-chevron-left"></i></button><h3 id="pickerMonthYear" style="color: var(--primary); margin: 0;">Miesiąc</h3><button class="btn-icon btn-outline" style="padding: 8px; flex-shrink: 0;" onclick="changePickerMonth(1)"><i class="fas fa-chevron-right"></i></button></div><div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.8rem; font-weight: bold; color: var(--text-muted); margin-bottom: 10px;"><div>Pn</div><div>Wt</div><div>Śr</div><div>Cz</div><div>Pt</div><div>Sb</div><div>Nd</div></div><div id="pickerDaysGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;"></div><div style="margin-top: 20px; text-align: center;"><button class="btn btn-outline" style="width: 100%;" onclick="jumpToToday(); closeCustomDatePicker();"><span data-i18n="today">Wróć do dzisiaj</span></button></div></div></div>
     <div class="modal" id="qrModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="text-align: center;"><h2><span data-i18n="qrTitle">Zeskanuj plan</span></h2><p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;" data-i18n="qrSub">Aparat w telefonie otworzy ten plan.</p><div id="qrcode" style="display: inline-block; background: white; padding: 15px; border-radius: 10px; margin: 0 auto;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('qrModal').style.display='none'"><span data-i18n="close">Zamknij</span></button></div></div>
     <div class="modal" id="bugModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--danger);"><i class="fas fa-bug"></i> <span data-i18n="bug">Zgłoś Błąd</span></h2><textarea id="bugDescription" class="notes-textarea" placeholder="..." style="min-height: 120px; font-size: 0.95rem; padding: 10px;"></textarea><div style="display: flex; gap: 10px; margin-top: 15px;"><button class="btn btn-outline" style="flex: 1;" onclick="document.getElementById('bugModal').style.display='none'"><span data-i18n="close">Anuluj</span></button><button class="btn" style="flex: 1; background: var(--danger); border-color: var(--danger);" onclick="sendBugReport()">Wyślij</button></div></div></div>
-    <div class="modal" id="changelogModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-rocket"></i> <span data-i18n="history">Historia Aktualizacji</span></h2><div style="max-height: 55vh; overflow-y: auto; padding-right: 15px; border-left: 2px solid var(--toggle-bg); padding-left: 10px; margin-left: 5px;"><div class="changelog-item"><div class="changelog-version">v5.0 PRO MAX <span class="changelog-date">Teraz</span></div><ul><li><strong>Globalny Dashboard:</strong> Pasek u góry pokazuje Twoją passę dni (Streaks), średnią i frekwencję.</li><li><strong>Prywatne Wiadomości (DM):</strong> W Hubie Komunikacji dodano nową zakładkę Studenci. Pisz bezpośrednio do znajomych z roku!</li><li><strong>Status Online:</strong> Zielona/Żółta kropka przy profilach na podstawie ostatniej aktywności.</li></ul></div></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('changelogModal').style.display='none'"><span data-i18n="close">Zamknij</span></button></div></div>
+    <div class="modal" id="changelogModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-rocket"></i> <span data-i18n="history">Historia Aktualizacji</span></h2><div style="max-height: 55vh; overflow-y: auto; padding-right: 15px; border-left: 2px solid var(--toggle-bg); padding-left: 10px; margin-left: 5px;"><div class="changelog-item"><div class="changelog-version">v5.1 PRO FIX <span class="changelog-date">Teraz</span></div><ul><li><strong>Usunięcie Błędu Logowania:</strong> Konta bez ustawionego pełnego Imienia/Nazwiska w Google nie psują już ekranu logowania i paska Admina. Zawsze widzisz poprawny panel!</li><li><strong>Integracja Zadań Zbiorczych:</strong> Z okna głównego "Zbiorcze zadania" możesz już nie tylko zaznaczać checkbox, ale również dowolnie edytować tekst i kasować zadania koszem.</li><li><strong>Zarządzanie Kolokwiami z Radaru:</strong> Z widoku "Radaru" usuniesz wybrane kolokwium jednym klikiem (X), bez wchodzenia w konkretny przedmiot.</li><li>Dodano zaginione tłumaczenia i ikonkę do paska przeglądarki.</li></ul></div></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('changelogModal').style.display='none'"><span data-i18n="close">Zamknij</span></button></div></div>
     <div class="modal" id="radarModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--danger);"><i class="fas fa-radar"></i> <span data-i18n="radarTitle">Radar Kolokwiów</span></h2><div id="radar-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 50vh; overflow-y: auto; padding-right: 5px;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('radarModal').style.display='none'"><span data-i18n="radarBtn">Biorę się za naukę!</span></button></div></div>
     <div class="modal" id="gradesModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column;"><h2 style="color: var(--primary); margin-bottom: 5px;"><i class="fas fa-graduation-cap"></i> <span data-i18n="gradesTitle">Średnia Ocen</span></h2><p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;" data-i18n="gradesSub">Wpisz oceny (np. 5, 4.5, 3).</p><div id="grades-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('gradesModal').style.display='none'"><span data-i18n="close">Zamknij</span></button></div></div>
     <div class="modal" id="globalTasksModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column;"><h2 style="color: var(--success); margin-bottom: 5px;"><i class="fas fa-tasks"></i> <span data-i18n="tasksTitle">Zbiorcze Zadania</span></h2><p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;" data-i18n="tasksSub">Wszystkie zadania ze wszystkich przedmiotów w jednym miejscu.</p><div id="global-tasks-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('globalTasksModal').style.display='none'"><span data-i18n="close">Zamknij</span></button></div></div>
@@ -543,14 +520,14 @@
         function saveData() { 
             localStorage.setItem('smartPlanData', JSON.stringify(scheduleData)); 
             if(auth.currentUser) db.collection("users").doc(auth.currentUser.uid).set({ plan: JSON.stringify(scheduleData) }, { merge: true });
-            updateUserPresence(); // Aktualizacja po zmianie planu (frekwencja)
+            updateUserPresence();
         }
 
         let gradesData = JSON.parse(localStorage.getItem('smartPlanGrades')) || {};
         function saveGrades() { 
             localStorage.setItem('smartPlanGrades', JSON.stringify(gradesData)); 
             if(auth.currentUser) db.collection("users").doc(auth.currentUser.uid).set({ grades: JSON.stringify(gradesData) }, { merge: true });
-            updateUserPresence(); // Aktualizacja po wpisaniu ocen
+            updateUserPresence();
         }
 
         if ('serviceWorker' in navigator) { navigator.serviceWorker.getRegistrations().then(function(registrations) { for(let r of registrations) { r.unregister(); } }); }
@@ -746,7 +723,7 @@
         }
 
         function markExam(w, d, c, dateStr, e) { 
-            e.stopPropagation(); 
+            if(e) e.stopPropagation(); 
             const user = auth.currentUser;
             const isAdmin = user && ADMIN_EMAILS.includes(user.email);
             const cardId = `${w}-${d}-${c}`;
@@ -819,6 +796,9 @@
             db.collection("admin_requests").doc(reqId).update({ status: isApproved ? "approved" : "rejected" });
         }
 
+        // ==========================================
+        // ZINTEGROWANY RADAR KOLOKWIÓW Z USUWANIEM
+        // ==========================================
         function openRadar() {
             toggleSidebar(); const radarList = document.getElementById('radar-list'); radarList.innerHTML = '';
             const now = new Date(); now.setHours(0,0,0,0); let examsFound = [];
@@ -833,7 +813,7 @@
                             if(exDate >= now) { 
                                 const diffDays = Math.ceil(Math.abs(exDate - now) / (1000 * 60 * 60 * 24)); 
                                 const isGlobal = globalAdminEvents.exams[cardId] && globalAdminEvents.exams[cardId].includes(examDateStr);
-                                examsFound.push({ subject: cls.subject, date: examDateStr, days: diffDays, isGlobal: isGlobal }); 
+                                examsFound.push({ w: week, d: d, cIdx: classIndex, subject: cls.subject, date: examDateStr, days: diffDays, isGlobal: isGlobal }); 
                             } 
                         }); 
                     }); 
@@ -845,8 +825,9 @@
                 let c = ex.days <= 3 ? 'var(--danger)' : (ex.days <= 7 ? '#f59e0b' : 'var(--primary)'); 
                 radarList.innerHTML += `
                     <div style="background: var(--bg-color); border-left: 4px solid ${c}; padding: 12px; border-radius: 8px;">
-                        <div style="font-weight:bold; font-size: 0.95rem; margin-bottom: 5px;">
-                            ${t_sub(ex.subject)} ${ex.isGlobal ? '<span style="color:#8b5cf6; font-size:0.7rem; margin-left:5px;"><i class="fas fa-globe"></i> ADMIN</span>' : ''}
+                        <div style="font-weight:bold; font-size: 0.95rem; margin-bottom: 5px; display:flex; justify-content:space-between; align-items:center;">
+                            <span>${t_sub(ex.subject)} ${ex.isGlobal ? '<span style="color:#8b5cf6; font-size:0.7rem; margin-left:5px;"><i class="fas fa-globe"></i> ADMIN</span>' : ''}</span>
+                            <button class="btn-icon" style="color:var(--danger); padding:0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; box-shadow:none;" onclick="markExam('${ex.w}', ${ex.d}, ${ex.cIdx}, '${ex.date}', event); setTimeout(openRadar, 300);"><i class="fas fa-times"></i></button>
                         </div>
                         <div style="font-size: 0.85rem; color: var(--text-muted); display:flex; justify-content:space-between; align-items: center;">
                             <span><i class="far fa-calendar-alt"></i> ${ex.date}</span>
@@ -857,11 +838,7 @@
             document.getElementById('radarModal').style.display = 'flex';
         }
 
-        // ==========================================
-        // NOWOŚĆ v5.0: GLOBALNE STATYSTYKI I STREAK
-        // ==========================================
         function calculateGlobalStats() {
-            // 1. ŚREDNIA
             let allGrades = [];
             Object.values(gradesData).forEach(str => {
                 if(str) {
@@ -871,7 +848,6 @@
             });
             let globalAvg = allGrades.length > 0 ? (allGrades.reduce((a,b)=>a+b,0) / allGrades.length).toFixed(2) : '-';
 
-            // 2. FREKWENCJA
             let totalAtt = 0; let totalAbs = 0;
             ['TN', 'TP'].forEach(w => {
                 for(let d=0; d<5; d++) {
@@ -897,20 +873,18 @@
                 let lastActive = data.lastActive || "";
                 let streak = data.streak || 0;
 
-                // LOGIKA STREAKA (Tylko 1 raz na dzień rośnie)
                 if (lastActive !== todayStr) {
                     let yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1);
-                    if (lastActive === formatDateStr(yesterday)) {
-                        streak += 1; // Utrzymana passa
-                    } else {
-                        streak = 1; // Passa przerwana, od nowa
-                    }
+                    if (lastActive === formatDateStr(yesterday)) { streak += 1; } else { streak = 1; }
                 }
 
                 let stats = calculateGlobalStats();
 
+                // Bezpieczne imię (naprawa błędu rozdzielania stringa)
+                let safeName = auth.currentUser.displayName || auth.currentUser.email.split('@')[0] || "Student";
+
                 db.collection("users").doc(uid).set({
-                    displayName: auth.currentUser.displayName,
+                    displayName: safeName,
                     photoURL: auth.currentUser.photoURL || '',
                     lastActive: todayStr,
                     timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -919,14 +893,12 @@
                     globalAtt: stats.att
                 }, { merge: true });
 
-                // Update UI na pasku
                 document.getElementById('global-stats-banner').style.display = 'flex';
                 document.getElementById('dash-avg').innerText = stats.avg;
                 document.getElementById('dash-att').innerText = stats.att;
                 document.getElementById('dash-streak').innerText = streak;
-            });
+            }).catch(e => console.error("UpdatePresence error:", e));
         }
-        // ==========================================
 
         function updateDashboard() {
             const now = new Date(); const todayStr = formatDateStr(now); const currentMins = now.getHours() * 60 + now.getMinutes(); const currentSecs = now.getSeconds();
@@ -962,10 +934,16 @@
             } else w.style.display = 'none';
         }
 
-        // 10. MODUŁY PRO
         function openGradesModal() { toggleSidebar(); const list = document.getElementById('grades-list'); list.innerHTML = ''; let subjects = new Set(); ['TN', 'TP'].forEach(w => { for(let d=0; d<5; d++) { (scheduleData[w][d] || []).forEach(cls => { let name = cls.subject.replace(/ \(wyk\.\)|\.\.\./g, '').trim(); subjects.add(name); }); } }); Array.from(subjects).sort().forEach(sub => { if(!gradesData[sub]) gradesData[sub] = ""; let gradesStr = gradesData[sub]; let avg = calculateAverage(gradesStr); list.innerHTML += `<div style="background: var(--bg-color); padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid ${avg >= 3 ? 'var(--success)' : (avg > 0 ? 'var(--danger)' : 'var(--text-muted)')};"><div style="font-weight: bold; font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">${t_sub(sub)}</div><div class="grade-input-wrapper"><input type="text" placeholder="${t('gradesEmpty')}" value="${gradesStr}" onchange="updateGrade('${sub}', this.value)" style="flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--toggle-bg); background: var(--card-bg); color: var(--text-main); font-size: 0.9rem; outline: none;"><div style="font-weight: 900; color: ${avg >= 3 ? 'var(--success)' : (avg > 0 ? 'var(--danger)' : 'var(--text-muted)')}; font-size: 1.2rem; min-width: 45px; text-align: center;">${avg > 0 ? avg.toFixed(2) : '-'}</div></div></div>`; }); document.getElementById('gradesModal').style.display = 'flex'; }
         function calculateAverage(str) { if(!str) return 0; let nums = str.replace(/,/g, '.').split(/[\s;]+/).map(Number).filter(n => !isNaN(n) && n >= 2 && n <= 5); if(nums.length === 0) return 0; let sum = nums.reduce((a, b) => a + b, 0); return sum / nums.length; }
         function updateGrade(sub, val) { gradesData[sub] = val; saveGrades(); openGradesModal(); }
+
+        // ==========================================
+        // ZINTEGROWANE ZADANIA ZBIORCZE (EDYCJA + USUWANIE)
+        // ==========================================
+        function updateGlobalTodoText(w, d, cIdx, tIdx, val) { scheduleData[w][d][cIdx].todo[tIdx].text = val; saveData(); renderCalendar(); }
+        function deleteGlobalTodo(w, d, cIdx, tIdx, e) { e.stopPropagation(); scheduleData[w][d][cIdx].todo.splice(tIdx, 1); saveData(); renderCalendar(); openGlobalTasksModal(); }
+        function toggleGlobalTodo(w, d, c, t_idx, e) { scheduleData[w][d][c].todo[t_idx].done = e.target.checked; saveData(); renderCalendar(); openGlobalTasksModal(); }
 
         function openGlobalTasksModal() { 
             toggleSidebar(); const list = document.getElementById('global-tasks-list'); list.innerHTML = ''; let hasTasks = false; 
@@ -975,11 +953,12 @@
                         hasTasks = true; 
                         list.innerHTML += `
                             <div class="todo-global-item">
-                                <input type="checkbox" ${t_item.done ? 'checked' : ''} onchange="toggleGlobalTodo('${w}', ${d}, ${cIdx}, ${tIdx}, event)" style="margin-top: 4px; transform: scale(1.2); accent-color: var(--primary); cursor: pointer; flex-shrink: 0;">
+                                <input type="checkbox" ${t_item.done ? 'checked' : ''} onchange="toggleGlobalTodo('${w}', ${d}, ${cIdx}, ${tIdx}, event)">
                                 <div style="flex: 1; min-width: 0; text-align: left; display: flex; flex-direction: column;">
                                     <span style="font-size: 0.7rem; color: var(--primary); font-weight: 900; text-transform: uppercase; margin-bottom: 2px;">${t_sub(cls.subject)}</span>
-                                    <span style="${t_item.done ? 'text-decoration: line-through; color: var(--text-muted);' : 'color: var(--text-main);'} font-size: 0.95rem; font-weight: 500; line-height: 1.3; word-break: break-word;">${t_item.text || '...'}</span>
+                                    <div contenteditable="true" class="todo-input" onblur="updateGlobalTodoText('${w}', ${d}, ${cIdx}, ${tIdx}, this.innerText)" onclick="event.stopPropagation()" style="${t_item.done ? 'text-decoration: line-through; color: var(--text-muted);' : 'color: var(--text-main);'} font-size: 0.95rem; font-weight: 500; line-height: 1.3; word-break: break-word;">${t_item.text || '...'}</div>
                                 </div>
+                                <button class="btn-icon" style="color:var(--danger); padding:0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;" onclick="deleteGlobalTodo('${w}', ${d}, ${cIdx}, ${tIdx}, event)"><i class="fas fa-times"></i></button>
                             </div>`; 
                     }); 
                 } 
@@ -987,7 +966,6 @@
             if(!hasTasks) list.innerHTML = `<div class="empty-gif-container"><img src="https://media.giphy.com/media/11s7Ke7jcNxCHS/giphy.gif" alt="Relax"><p>${t('tasksEmpty')}</p></div>`; 
             document.getElementById('globalTasksModal').style.display = 'flex'; 
         }
-        function toggleGlobalTodo(w, d, c, t_idx, e) { scheduleData[w][d][c].todo[t_idx].done = e.target.checked; saveData(); renderCalendar(); openGlobalTasksModal(); }
 
         function getPastDatesForClass(weekType, dayIndex, specificDates, cancelledDates, globalCancelled) {
             let pastDates = []; let iterDate = new Date(semesterStart); let today = new Date(); today.setHours(23, 59, 59, 999);
@@ -1076,7 +1054,6 @@
             document.getElementById('attendanceModal').style.display = 'flex';
         }
 
-        // --- ZAAWANSOWANE WYSZUKIWANIE (KATALOG) ---
         function openDirectoryModal() {
             toggleSidebar(); switchDirectoryTab('lecturer'); document.getElementById('directoryModal').style.display = 'flex';
         }
@@ -1117,7 +1094,7 @@
         // 11. FIREBASE CHAT & CLOUD SYNC LOGIC
         function loginForSync() { 
             const provider = new firebase.auth.GoogleAuthProvider(); 
-            auth.signInWithPopup(provider).then(res => { alert(`Zalogowano jako ${res.user.displayName}!`); renderCalendar(); }).catch(e => alert("Błąd: " + e.message)); 
+            auth.signInWithPopup(provider).then(res => { alert(`Zalogowano!`); renderCalendar(); }).catch(e => alert("Błąd: " + e.message)); 
         }
 
         function toggleEmojiPicker(inputId) {
@@ -1141,8 +1118,9 @@
             if(e) e.stopPropagation(); 
             const user = auth.currentUser; 
             if(!user) { alert("Zaloguj się z Menu, żeby pisać na forum!"); return loginForSync(); } 
+            const safeName = user.displayName || user.email.split('@')[0] || "Student";
             const inp = document.getElementById(`chat-in-${cardId}`); if(!inp.value.trim()) return; 
-            db.collection("chats").add({ classId: cardId, author: user.displayName, text: inp.value, photoURL: user.photoURL || '', timestamp: firebase.firestore.FieldValue.serverTimestamp(), uid: user.uid }).then(() => inp.value = ''); 
+            db.collection("chats").add({ classId: cardId, author: safeName, text: inp.value, photoURL: user.photoURL || '', timestamp: firebase.firestore.FieldValue.serverTimestamp(), uid: user.uid }).then(() => inp.value = ''); 
         }
 
         function listenForMessages(cardId) { 
@@ -1178,9 +1156,6 @@
             }); 
         }
 
-        // ==========================================
-        // NOWOŚĆ v5.0: CHAT HUB (DM + GLOBAL)
-        // ==========================================
         let currentActiveChatId = null;
         let globalChatUnsubscribe = null;
         let usersUnsubscribe = null;
@@ -1228,26 +1203,20 @@
                     sel.innerHTML += `<div class="chat-hub-item" onclick="openSpecificChat('${cardId}', '${t_sub(subjectName)}')"><i class="fas fa-comments"></i> ${t_sub(subjectName)}</div>`;
                 });
             } else if (tab === 'students') {
-                sel.innerHTML = '<div style="text-align:center; padding:10px; font-size:0.8rem; color:var(--text-muted);">Szukam studentów...</div>';
-                usersUnsubscribe = db.collection("users").orderBy("lastActive", "desc").onSnapshot(snap => {
+                sel.innerHTML = '<div class="empty-gif-container" style="padding:10px;"><img src="https://media.giphy.com/media/xT5LMHxhOfscxPfIfm/giphy.gif" alt="Szukam" style="width:80px;"><p style="font-size:0.8rem;">Szukam studentów...</p></div>';
+                usersUnsubscribe = db.collection("users").onSnapshot(snap => {
                     sel.innerHTML = '';
                     const now = new Date();
                     const todayStr = formatDateStr(now);
 
                     snap.forEach(doc => {
                         const u = doc.data();
-                        if (u.displayName && doc.id !== auth.currentUser?.uid) { // Nie pokazujemy siebie samego
+                        if (u.displayName && doc.id !== auth.currentUser?.uid) { 
                             const avatarUrl = u.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.displayName) + '&background=random';
-                            
-                            // Prosty wskaźnik Online oparty na dniu/aktywności
                             let statusClass = "status-offline";
-                            if (u.lastActive === todayStr) {
-                                // W uproszczonym modelu, jeśli był dziś, to żółty. 
-                                // (Dla zielonego musielibyśmy zapisywać co minutę, oszczędzamy bazę)
-                                statusClass = "status-idle"; 
-                            }
+                            if (u.lastActive === todayStr) { statusClass = "status-idle"; }
                             
-                            const chatId = [auth.currentUser?.uid, doc.id].sort().join('_'); // Unikalne ID czatu 1 na 1
+                            const chatId = [auth.currentUser?.uid, doc.id].sort().join('_'); 
 
                             sel.innerHTML += `
                             <div class="dm-user-item" onclick="openSpecificChat('${chatId}', '${u.displayName}')">
@@ -1266,20 +1235,20 @@
                         }
                     });
                     if (sel.innerHTML === '') sel.innerHTML = '<div style="text-align:center; padding:10px; font-size:0.8rem; color:var(--text-muted);">Zaproś znajomych z roku do zalogowania!</div>';
-                });
+                }, e => { console.error(e); sel.innerHTML = '<div style="text-align:center; color:var(--danger); padding:10px;">Brak dostępu lub błąd sieci.</div>'; });
             }
         }
 
         function openSpecificChat(cardId, title) {
             currentActiveChatId = cardId;
             document.getElementById('chat-hub-selection').style.display = 'none';
-            document.getElementById('chat-hub-tabs').style.display = 'none'; // Ukrywamy taby jak jesteśmy w czacie
+            document.getElementById('chat-hub-tabs').style.display = 'none'; 
             document.getElementById('chat-hub-active').style.display = 'flex';
             document.getElementById('hub-back-btn').style.display = 'block';
             document.getElementById('hub-title-span').innerHTML = `<i class="fas fa-comments"></i> ${title}`;
             
             const box = document.getElementById('global-chat-messages');
-            box.innerHTML = '<div class="empty-gif-container"><img src="https://media.giphy.com/media/xT5LMHxhOfscxPfIfm/giphy.gif" alt="Szukam"><p>Szukam wiadomości...</p></div>';
+            box.innerHTML = '<div class="empty-gif-container"><img src="https://media.giphy.com/media/xT5LMHxhOfscxPfIfm/giphy.gif" alt="Szukam" style="width:100px;"><p style="font-size:0.8rem;">Szukam wiadomości...</p></div>';
             
             if(globalChatUnsubscribe) globalChatUnsubscribe();
             
@@ -1311,8 +1280,7 @@
             }); 
         }
 
-        // Nadpisanie powrotu w Hubie, zeby przywracał Taby
-        const originalShowChatHubSelection = showChatHubSelection;
+        let originalShowChatHubSelection = showChatHubSelection;
         showChatHubSelection = function() {
             document.getElementById('chat-hub-tabs').style.display = 'flex';
             const currentTab = document.querySelector('.hub-tab-btn.active').id.replace('tab-btn-', '');
@@ -1323,10 +1291,11 @@
             const user = auth.currentUser; 
             if(!user) { alert("Zaloguj się z Menu!"); return loginForSync(); } 
             if(!currentActiveChatId) return;
+            const safeName = user.displayName || user.email.split('@')[0] || "Student";
             const inp = document.getElementById(`global-chat-input`); if(!inp.value.trim()) return; 
             db.collection("chats").add({ 
                 classId: currentActiveChatId, 
-                author: user.displayName, 
+                author: safeName, 
                 text: inp.value, 
                 photoURL: user.photoURL || '',
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(), 
@@ -1337,14 +1306,17 @@
             }); 
         }
 
-        // --- OBSŁUGA ZMIANY KONTA ---
+        // --- OBSŁUGA ZMIANY KONTA I ZABEZPIECZENIE BŁĘDU ---
         auth.onAuthStateChanged(user => {
             const loginBtn = document.getElementById('login-menu-btn');
             const adminBtn = document.getElementById('admin-panel-btn');
             
             if(user) {
-                console.log("Zalogowano:", user.displayName);
-                if(loginBtn) loginBtn.innerHTML = `<img src="${user.photoURL || 'https://via.placeholder.com/24'}" onerror="this.src='https://via.placeholder.com/24'" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"> <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.displayName.split(' ')[0]}</span>`;
+                // BEZPIECZNE POBIERANIE IMIENIA - NAPRAWA BŁĘDU LOGOWANIA!
+                const safeName = user.displayName ? user.displayName.split(' ')[0] : (user.email ? user.email.split('@')[0] : "Student");
+                const safeAvatar = user.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(safeName) + '&background=random';
+                
+                if(loginBtn) loginBtn.innerHTML = `<img src="${safeAvatar}" onerror="this.src='https://via.placeholder.com/24'" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"> <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${safeName}</span>`;
                 
                 if (ADMIN_EMAILS.includes(user.email)) {
                     if(adminBtn) adminBtn.style.display = 'flex';
@@ -1361,11 +1333,13 @@
                     }
                 }).catch(e => console.error("Błąd chmury:", e));
 
-                // Aktualizacja Passy (Streak) po zalogowaniu
                 updateUserPresence();
 
             } else {
-                if(loginBtn) loginBtn.innerHTML = `<i class="fab fa-google" style="color: #4285F4"></i> <span data-i18n="login">${t('login')}</span>`;
+                if(loginBtn) {
+                    loginBtn.innerHTML = `<i class="fab fa-google" style="color: #4285F4"></i> <span>${t('login')}</span>`;
+                    loginBtn.querySelector('span').setAttribute('data-i18n', 'login');
+                }
                 if(adminBtn) adminBtn.style.display = 'none';
                 document.getElementById('global-stats-banner').style.display = 'none';
             }
@@ -1376,7 +1350,6 @@
         function setTheme(t_val) { document.body.className = ''; if (t_val !== 'light') document.body.classList.add(`theme-${t_val}`); localStorage.setItem('smartPlanTheme', t_val); const m = document.getElementById('meta-theme-color'); if(t_val === 'matrix') m.content = '#000000'; else if(t_val === 'cad') m.content = '#004488'; else if(t_val === 'dark') m.content = '#111827'; else if(t_val === 'uwu') m.content = '#ff66b2'; else if(t_val === 'ans') m.content = '#006633'; else m.content = '#4f46e5'; }
         function exportICS() { let icsContent = "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//SmartPlan//Student//PL\nCALSCALE:GREGORIAN\n"; const generateUID = () => Math.random().toString(36).substring(2, 15) + "@smartplan.pl"; const dtStamp = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + "Z"; [{ type: 'TN', starts: tnWeeksStarts }, { type: 'TP', starts: tpWeeksStarts }].forEach(weekData => { weekData.starts.forEach(mondayStr => { const baseMonday = new Date(mondayStr); for (let dayIndex = 0; dayIndex < 5; dayIndex++) { const eventDate = new Date(baseMonday); eventDate.setDate(eventDate.getDate() + dayIndex); const dateStrFormat = eventDate.toISOString().split('T')[0]; const icsDateStr = dateStrFormat.replace(/-/g, ''); if (checkSpecialDay(dateStrFormat)) continue; scheduleData[weekData.type][dayIndex].forEach(cls => { if (cls.specificDates && cls.specificDates.length > 0 && !cls.specificDates.includes(dateStrFormat)) return; if (cls.cancelledDates && cls.cancelledDates.includes(dateStrFormat)) return; icsContent += `BEGIN:VEVENT\nUID:${generateUID()}\nDTSTAMP:${dtStamp}\nSUMMARY:${cls.exams && cls.exams.includes(dateStrFormat) ? '[KOLOKWIUM] ' : ''}${cls.subject}\nLOCATION:${cls.room || ''}\nDTSTART;TZID=Europe/Warsaw:${icsDateStr}T${cls.start.replace(':','')}00\nDTEND;TZID=Europe/Warsaw:${icsDateStr}T${cls.end.replace(':','')}00\nEND:VEVENT\n`; }); } }); }); icsContent += "END:VCALENDAR"; const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' }); const link = document.createElement('a'); link.href = window.URL.createObjectURL(blob); link.download = 'smart_plan.ics'; link.click(); }
 
-        // 13. INNE (QR, Dodawanie)
         function changeWeek(offset) { viewDateStart.setDate(viewDateStart.getDate() + (offset * 7)); renderCalendar(); }
         function jumpToToday() { viewDateStart = getSmartStartMonday(); renderCalendar(); }
         function showQRCode() { document.getElementById('qrModal').style.display = 'flex'; document.getElementById('qrcode').innerHTML = ''; new QRCode(document.getElementById('qrcode'), { text: window.location.href.split('#')[0], width: 200, height: 200, colorDark : "#1f2937", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H }); }
@@ -1388,7 +1361,6 @@
         function sendBugReport() { const desc = document.getElementById('bugDescription').value; if(!desc.trim()) return alert("Pusto!"); window.location.href = `mailto:hubertwieczorekk@gmail.com?subject=Bug&body=${encodeURIComponent(desc)}`; document.getElementById('bugModal').style.display = 'none'; }
         function releaseTheCat() { let cat = document.getElementById('nyan-cat'); if (!cat) { cat = document.createElement('img'); cat.id = 'nyan-cat'; cat.src = 'https://media1.giphy.com/media/sIIhZliB2McAo/giphy.gif'; cat.style.position = 'fixed'; cat.style.bottom = '100px'; cat.style.left = '-200px'; cat.style.width = '150px'; cat.style.zIndex = '9999'; cat.style.pointerEvents = 'none'; document.body.appendChild(cat); } cat.style.transition = 'none'; cat.style.left = '-200px'; cat.style.display = 'block'; setTimeout(() => { cat.style.transition = 'left 4s linear'; cat.style.left = window.innerWidth + 'px'; }, 50); setTimeout(() => { cat.style.display = 'none'; }, 4100); }
 
-        // --- START APP ---
         const savedTheme = localStorage.getItem('smartPlanTheme'); if (savedTheme) setTheme(savedTheme);
         document.getElementById('global-chat-window').style.display = 'none';
         applyTranslations();
