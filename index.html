@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Plan v4.1 PRO Admin</title>
+    <title>Smart Plan v4.2 PRO</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -106,7 +106,6 @@
         .todo-global-item { background: var(--bg-color); padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; }
         .chat-box { max-height: 250px; overflow-y: auto; background: var(--toggle-bg); border-radius: 8px; padding: 10px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
         
-        /* ZMIANA CHAT BUBBLE DLA AWATARÓW */
         .chat-message-wrapper { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 5px; width: 100%; }
         .chat-message-wrapper.me { justify-content: flex-end; }
         .chat-message-wrapper.other { justify-content: flex-start; }
@@ -118,14 +117,25 @@
         /* GLOBAL CHAT STYLES */
         #global-chat-btn { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0, 0.3); z-index: 9000; transition: 0.3s; }
         #global-chat-btn:hover { transform: scale(1.1); background: var(--primary-hover); }
-        #global-chat-window { display: none; position: fixed; bottom: 90px; right: 20px; width: 340px; height: 450px; background: var(--card-bg); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9000; flex-direction: column; overflow: hidden; border: 1px solid var(--toggle-bg); }
+        #global-chat-window { display: none; position: fixed; bottom: 90px; right: 20px; width: 340px; height: 480px; background: var(--card-bg); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9000; flex-direction: column; overflow: hidden; border: 1px solid var(--toggle-bg); }
         #global-chat-header { background: var(--primary); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
         #global-chat-header i { cursor: pointer; font-size: 1.2rem; }
         #global-chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: var(--bg-color); }
-        #global-chat-input-area { padding: 10px; background: var(--card-bg); border-top: 1px solid var(--toggle-bg); display: flex; gap: 8px; }
+        #global-chat-input-area { padding: 10px; background: var(--card-bg); border-top: 1px solid var(--toggle-bg); display: flex; align-items: center; gap: 8px; position: relative; }
         #global-chat-input { flex: 1; padding: 10px 15px; border-radius: 20px; border: 1px solid var(--toggle-bg); outline: none; font-size: 0.9rem; background: var(--bg-color); color: var(--text-main); }
+        
+        /* EMOJI PICKER */
+        .emoji-btn { background: none; border: none; font-size: 1.5rem; color: var(--text-muted); cursor: pointer; transition: 0.2s; padding: 5px; }
+        .emoji-btn:hover { color: var(--primary); transform: scale(1.1); }
+        .emoji-picker-container { display: none; position: absolute; bottom: 60px; right: 10px; background: var(--card-bg); border: 1px solid var(--toggle-bg); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); width: 220px; padding: 10px; grid-template-columns: repeat(6, 1fr); gap: 5px; z-index: 9001; }
+        .emoji-item { cursor: pointer; font-size: 1.5rem; text-align: center; padding: 5px; border-radius: 8px; transition: 0.2s; }
+        .emoji-item:hover { background: var(--toggle-bg); transform: scale(1.2); }
 
-        .request-card { background: var(--bg-color); padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid var(--primary); }
+        /* DIRECTORY / KATALOG */
+        .directory-card { background: var(--bg-color); padding: 15px; border-radius: 12px; margin-bottom: 12px; border-left: 4px solid var(--primary); }
+        .directory-item { font-size: 0.85rem; color: var(--text-muted); margin-top: 5px; padding-left: 10px; border-left: 2px solid var(--toggle-bg); }
+        .dir-tab-btn { flex: 1; padding: 10px; background: var(--toggle-bg); border: none; font-weight: bold; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+        .dir-tab-btn.active { background: var(--primary); color: white; }
 
         @keyframes bounceIn { 0% { bottom: -50px; opacity: 0; } 60% { bottom: 30px; opacity: 1; } 100% { bottom: 20px; } } @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-10px) rotate(-5deg); } 75% { transform: translateX(10px) rotate(5deg); } } @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } } @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         @media (max-width: 1024px) { .calendar-container { grid-template-columns: repeat(3, 1fr); } } @media (max-width: 768px) { .calendar-container { grid-template-columns: 1fr; } .top-bar { flex-direction: column; align-items: flex-start; } .controls { width: 100%; justify-content: space-between; } .search-bar { width: 100%; } #next-class-widget { flex-direction: column; text-align: center; } .widget-left { flex-direction: column; } .expanded-actions { grid-template-columns: 1fr; } .btn-cancel-class { grid-column: span 1; } #global-chat-window { width: calc(100vw - 40px); bottom: 85px; right: 20px; } #global-chat-btn { bottom: 20px; right: 20px; width: 55px; height: 55px; font-size: 1.5rem; } }
@@ -135,20 +145,12 @@
 
     <script>
         // --- TARCZA ANTY-CIEKAWSKI STUDENT (Poziom 1) ---
-        // Blokada prawego przycisku myszy
         document.addEventListener('contextmenu', event => event.preventDefault());
-
-        // Blokada skrótów deweloperskich i podglądu kodu
         document.onkeydown = function(e) {
-            // F12
             if(e.keyCode === 123) return false;
-            // Ctrl+Shift+I (Narzędzia deweloperskie)
             if(e.ctrlKey && e.shiftKey && e.keyCode === 'I'.charCodeAt(0)) return false;
-            // Ctrl+Shift+C (Wybieranie elementu)
             if(e.ctrlKey && e.shiftKey && e.keyCode === 'C'.charCodeAt(0)) return false;
-            // Ctrl+Shift+J (Konsola)
             if(e.ctrlKey && e.shiftKey && e.keyCode === 'J'.charCodeAt(0)) return false;
-            // Ctrl+U (Podgląd źródła strony)
             if(e.ctrlKey && e.keyCode === 'U'.charCodeAt(0)) return false;
         };
     </script>
@@ -174,6 +176,7 @@
             <li onclick="loginForSync()" id="login-menu-btn"><i class="fab fa-google" style="color: #4285F4"></i> Zaloguj i Synchronizuj</li>
             <li id="admin-panel-btn" onclick="openAdminPanel()" style="display: none; background: rgba(255, 215, 0, 0.1); border-radius: 8px;"><i class="fas fa-crown" style="color: #f59e0b"></i> Panel Admina (Wnioski)</li>
             
+            <li onclick="openDirectoryModal()"><i class="fas fa-search-plus" style="color: #8b5cf6"></i> Katalog / Zaawansowane</li>
             <li onclick="openRadar()"><i class="fas fa-bullseye" style="color: var(--danger)"></i> Radar Kolokwiów</li>
             <li onclick="openGradesModal()"><i class="fas fa-graduation-cap" style="color: #f59e0b"></i> Średnia Ocen</li>
             <li onclick="openGlobalTasksModal()"><i class="fas fa-tasks" style="color: var(--success)"></i> Zbiorcze Zadania</li>
@@ -255,7 +258,7 @@
 
     <footer class="site-footer">
         <div class="footer-content">
-            <div class="footer-brand"><i class="fas fa-graduation-cap"></i> Smart Plan <span class="version-badge">v4.1 PRO Admin</span></div>
+            <div class="footer-brand"><i class="fas fa-graduation-cap"></i> Smart Plan <span class="version-badge">v4.2 PRO</span></div>
             <div>Stworzone z ❤️ dla inżynierów AiR</div>
         </div>
         <div class="footer-links">
@@ -278,8 +281,15 @@
             <div style="text-align:center; padding:10px; font-size:0.8rem; color:var(--text-muted);">Kliknij przycisk, aby połączyć się z serwerem...</div>
         </div>
         <div id="global-chat-input-area">
+            <button class="emoji-btn" onclick="toggleEmojiPicker('global-chat-input')"><i class="far fa-smile"></i></button>
             <input type="text" id="global-chat-input" placeholder="Napisz i wyślij Enter..." onkeypress="if(event.key === 'Enter') sendGlobalChat()">
             <button class="btn" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; justify-content: center;" onclick="sendGlobalChat()"><i class="fas fa-paper-plane"></i></button>
+            
+            <div class="emoji-picker-container" id="global-emoji-picker">
+                <span class="emoji-item" onclick="insertEmoji('global-chat-input', '😀')">😀</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '😂')">😂</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '😎')">😎</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '😍')">😍</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '😭')">😭</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '👍')">👍</span>
+                <span class="emoji-item" onclick="insertEmoji('global-chat-input', '🙏')">🙏</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '🔥')">🔥</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '💡')">💡</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '💀')">💀</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '👀')">👀</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '🍺')">🍺</span>
+                <span class="emoji-item" onclick="insertEmoji('global-chat-input', '❤️')">❤️</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '💯')">💯</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '🚀')">🚀</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '✅')">✅</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '❌')">❌</span><span class="emoji-item" onclick="insertEmoji('global-chat-input', '❓')">❓</span>
+            </div>
         </div>
     </div>
 
@@ -287,7 +297,7 @@
     <div class="modal" id="customDatePickerModal" onclick="closeCustomDatePicker()"><div class="modal-content" onclick="event.stopPropagation()" style="max-width: 350px; padding: 20px;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><button class="btn-icon btn-outline" style="padding: 8px;" onclick="changePickerMonth(-1)"><i class="fas fa-chevron-left"></i></button><h3 id="pickerMonthYear" style="color: var(--primary); margin: 0;">Miesiąc</h3><button class="btn-icon btn-outline" style="padding: 8px;" onclick="changePickerMonth(1)"><i class="fas fa-chevron-right"></i></button></div><div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.8rem; font-weight: bold; color: var(--text-muted); margin-bottom: 10px;"><div>Pn</div><div>Wt</div><div>Śr</div><div>Cz</div><div>Pt</div><div>Sb</div><div>Nd</div></div><div id="pickerDaysGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;"></div><div style="margin-top: 20px; text-align: center;"><button class="btn btn-outline" style="width: 100%;" onclick="jumpToToday(); closeCustomDatePicker();">Wróć do dzisiaj</button></div></div></div>
     <div class="modal" id="qrModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="text-align: center;"><h2>Zeskanuj plan</h2><p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Aparat w telefonie otworzy ten plan.</p><div id="qrcode" style="display: inline-block; background: white; padding: 15px; border-radius: 10px; margin: 0 auto;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('qrModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="bugModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--danger);"><i class="fas fa-bug"></i> Zgłoś Błąd</h2><textarea id="bugDescription" class="notes-textarea" placeholder="Napisz tutaj, co poszło nie tak..." style="min-height: 120px; font-size: 0.95rem; padding: 10px;"></textarea><div style="display: flex; gap: 10px; margin-top: 15px;"><button class="btn btn-outline" style="flex: 1;" onclick="document.getElementById('bugModal').style.display='none'">Anuluj</button><button class="btn" style="flex: 1; background: var(--danger); border-color: var(--danger);" onclick="sendBugReport()">Wyślij</button></div></div></div>
-    <div class="modal" id="changelogModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-rocket"></i> Historia Aktualizacji</h2><div style="max-height: 55vh; overflow-y: auto; padding-right: 15px; border-left: 2px solid var(--toggle-bg); padding-left: 10px; margin-left: 5px;"><div class="changelog-item"><div class="changelog-version">v4.1 PRO ADMIN <span class="changelog-date">Teraz</span></div><ul><li><strong>Google Avatars:</strong> Zdjęcia z konta Google pojawiają się w lewym menu oraz w dymkach na czacie!</li><li><strong>Anty-Ciekawski:</strong> Kod zablokowany przed "Badaniem elementu" (F12, Prawy Klik).</li></ul></div></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('changelogModal').style.display='none'">Zamknij</button></div></div>
+    <div class="modal" id="changelogModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-rocket"></i> Historia Aktualizacji</h2><div style="max-height: 55vh; overflow-y: auto; padding-right: 15px; border-left: 2px solid var(--toggle-bg); padding-left: 10px; margin-left: 5px;"><div class="changelog-item"><div class="changelog-version">v4.2 PRO <span class="changelog-date">Teraz</span></div><ul><li><strong>Katalog (Zaawansowane Wyszukiwanie):</strong> Dodano widok grupujący cały plan po wykładowcach i salach.</li><li><strong>Emoji & Awatary:</strong> Czat posiada teraz wbudowane emotikony i poprawne zdjęcia Twojego profilu.</li></ul></div></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('changelogModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="radarModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--danger);"><i class="fas fa-radar"></i> Radar Kolokwiów</h2><div id="radar-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 50vh; overflow-y: auto; padding-right: 5px;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('radarModal').style.display='none'">Biorę się za naukę!</button></div></div>
     <div class="modal" id="gradesModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column;"><h2 style="color: var(--primary); margin-bottom: 5px;"><i class="fas fa-graduation-cap"></i> Średnia Ocen</h2><p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Wpisz oceny (np. 5, 4.5, 3).</p><div id="grades-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('gradesModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="globalTasksModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column;"><h2 style="color: var(--success); margin-bottom: 5px;"><i class="fas fa-tasks"></i> Zbiorcze Zadania</h2><p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Wszystkie zadania ze wszystkich przedmiotów w jednym miejscu.</p><div id="global-tasks-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('globalTasksModal').style.display='none'">Zamknij</button></div></div>
@@ -302,10 +312,22 @@
         </div>
     </div>
 
+    <div class="modal" id="directoryModal" onclick="this.style.display='none'">
+        <div class="modal-content" onclick="event.stopPropagation()" style="max-height: 85vh; display: flex; flex-direction: column; width: 95%; max-width: 600px;">
+            <h2 style="color: #8b5cf6; margin-bottom: 15px;"><i class="fas fa-search-plus"></i> Katalog Systemowy</h2>
+            <div style="display: flex; background: var(--toggle-bg); border-radius: 10px; overflow: hidden; margin-bottom: 15px;">
+                <button class="dir-tab-btn active" id="dir-tab-lecturer" onclick="switchDirectoryTab('lecturer')"><i class="fas fa-user-tie"></i> Wykładowcy</button>
+                <button class="dir-tab-btn" id="dir-tab-room" onclick="switchDirectoryTab('room')"><i class="fas fa-door-open"></i> Sale</button>
+            </div>
+            <div id="directory-list" style="overflow-y: auto; padding-right: 5px; flex: 1; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));"></div>
+            <button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('directoryModal').style.display='none'">Zamknij</button>
+        </div>
+    </div>
+
     <script>
         // 1. WERSJONOWANIE I NAPRAWA CACHE
-        const APP_VERSION = "4.1.0-ADMIN";
-        const ADMIN_EMAILS = ["hubertwieczorekk@gmail.com"]; // TWÓJ EMAIL JAKO GŁÓWNY ADMIN
+        const APP_VERSION = "4.2.0-PRO";
+        const ADMIN_EMAILS = ["hubertwieczorekk@gmail.com"];
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function(registrations) {
@@ -320,7 +342,7 @@
         const firebaseConfig = { apiKey: "AIzaSyDCg9gIaAG-dgf45R76ovT22fBSY0-eR98", authDomain: "smart-plan-air.firebaseapp.com", projectId: "smart-plan-air", storageBucket: "smart-plan-air.firebasestorage.app", messagingSenderId: "571923275689", appId: "1:571923275689:web:ed975c8aaa0ce4392f6eb8" };
         firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); const auth = firebase.auth();
 
-        // --- GLOBALNY STAN ZMIAN (Zatwierdzonych) ---
+        // --- GLOBALNY STAN ZMIAN ---
         let globalAdminEvents = { cancelled: {}, exams: {} };
         db.collection("global_state").doc("events").onSnapshot(doc => {
             if (doc.exists) {
@@ -332,7 +354,7 @@
             }
         });
 
-        // 3. BAZA DANYCH (Z hybrydowym zapisem CLOUD SYNC)
+        // 3. BAZA DANYCH 
         const tnWeeksStarts = ['2026-02-23', '2026-03-09', '2026-03-23', '2026-04-06', '2026-04-20', '2026-05-04', '2026-05-18', '2026-06-01'];
         const tpWeeksStarts = ['2026-03-02', '2026-03-16', '2026-03-30', '2026-04-13', '2026-04-27', '2026-05-11', '2026-05-25', '2026-06-08'];
         const freeDays = ['2026-04-03', '2026-04-06', '2026-04-07', '2026-04-08', '2026-05-01', '2026-06-04'];
@@ -646,7 +668,7 @@
         }
 
 
-        // 8. RADAR (Z UWZGLĘDNIENIEM GLOBALNYCH)
+        // 8. RADAR
         function openRadar() {
             toggleSidebar(); const radarList = document.getElementById('radar-list'); radarList.innerHTML = '';
             const now = new Date(); now.setHours(0,0,0,0); let examsFound = [];
@@ -688,7 +710,7 @@
             document.getElementById('radarModal').style.display = 'flex';
         }
 
-        // 9. DASHBOARD I ZEGAR (POMIJANIE GLOBALNIE ODWOŁANYCH)
+        // 9. DASHBOARD I ZEGAR
         function updateDashboard() {
             const now = new Date(); const todayStr = formatDateStr(now); const currentMins = now.getHours() * 60 + now.getMinutes(); const currentSecs = now.getSeconds();
             const weekType = getWeekTypeForDate(now); const currentDayIndex = now.getDay() - 1; const specialDay = checkSpecialDay(todayStr);
@@ -705,7 +727,7 @@
                     let cardId = `${weekType}-${currentDayIndex}-${cls.origIdx}`;
                     let isCancelledLocal = cls.cancelledDates && cls.cancelledDates.includes(todayStr);
                     let isCancelledGlobal = globalAdminEvents.cancelled[cardId] && globalAdminEvents.cancelled[cardId].includes(todayStr);
-                    if (isCancelledLocal || isCancelledGlobal) continue; // Pomiń odwołane z dashboardu
+                    if (isCancelledLocal || isCancelledGlobal) continue;
 
                     const startMin = parseInt(cls.start.split(':')[0])*60 + parseInt(cls.start.split(':')[1]);
                     if(startMin > currentMins) { nextClass = cls; timeToNextMins = startMin - currentMins; break; }
@@ -723,7 +745,7 @@
             } else w.style.display = 'none';
         }
 
-        // 10. ŚREDNIA, ZADANIA ZBIORCZE I FREKWENCJA
+        // 10. MODUŁY PRO
         function openGradesModal() { toggleSidebar(); const list = document.getElementById('grades-list'); list.innerHTML = ''; let subjects = new Set(); ['TN', 'TP'].forEach(w => { for(let d=0; d<5; d++) { (scheduleData[w][d] || []).forEach(cls => { let name = cls.subject.replace(/ \(wyk\.\)|\.\.\./g, '').trim(); subjects.add(name); }); } }); Array.from(subjects).sort().forEach(sub => { if(!gradesData[sub]) gradesData[sub] = ""; let gradesStr = gradesData[sub]; let avg = calculateAverage(gradesStr); list.innerHTML += `<div style="background: var(--bg-color); padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid ${avg >= 3 ? 'var(--success)' : (avg > 0 ? 'var(--danger)' : 'var(--text-muted)')};"><div style="font-weight: bold; font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">${sub}</div><div class="grade-input-wrapper"><input type="text" placeholder="Brak ocen (np. 4.5, 3)..." value="${gradesStr}" onchange="updateGrade('${sub}', this.value)" style="flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--toggle-bg); background: var(--card-bg); color: var(--text-main); font-size: 0.9rem; outline: none;"><div style="font-weight: 900; color: ${avg >= 3 ? 'var(--success)' : (avg > 0 ? 'var(--danger)' : 'var(--text-muted)')}; font-size: 1.2rem; min-width: 45px; text-align: center;">${avg > 0 ? avg.toFixed(2) : '-'}</div></div></div>`; }); document.getElementById('gradesModal').style.display = 'flex'; }
         function calculateAverage(str) { if(!str) return 0; let nums = str.replace(/,/g, '.').split(/[\s;]+/).map(Number).filter(n => !isNaN(n) && n >= 2 && n <= 5); if(nums.length === 0) return 0; let sum = nums.reduce((a, b) => a + b, 0); return sum / nums.length; }
         function updateGrade(sub, val) { gradesData[sub] = val; saveGrades(); openGradesModal(); }
@@ -800,15 +822,81 @@
             document.getElementById('attendanceModal').style.display = 'flex';
         }
 
-        // 11. FIREBASE CHAT & CLOUD SYNC LOGIC (Z AWATARAMI)
+        // --- ZAAWANSOWANE WYSZUKIWANIE (KATALOG) ---
+        function openDirectoryModal() {
+            toggleSidebar();
+            switchDirectoryTab('lecturer');
+            document.getElementById('directoryModal').style.display = 'flex';
+        }
+
+        function switchDirectoryTab(tab) {
+            document.getElementById('dir-tab-lecturer').classList.remove('active');
+            document.getElementById('dir-tab-room').classList.remove('active');
+            document.getElementById(`dir-tab-${tab}`).classList.add('active');
+
+            const list = document.getElementById('directory-list');
+            list.innerHTML = '';
+
+            let dataMap = {};
+            
+            ['TN', 'TP'].forEach(w => {
+                for(let d=0; d<5; d++) {
+                    (scheduleData[w][d] || []).forEach(cls => {
+                        let key = tab === 'lecturer' ? cls.lecturer : cls.room;
+                        if (!key || key.trim() === "") key = "Nie przypisano";
+                        
+                        if (!dataMap[key]) dataMap[key] = new Set();
+                        
+                        let info = tab === 'lecturer' ? `${cls.subject} (${cls.type})` : `${cls.subject} - ${cls.lecturer || 'Brak wykładowcy'}`;
+                        dataMap[key].add(info);
+                    });
+                }
+            });
+
+            Object.keys(dataMap).sort().forEach(key => {
+                let itemsHtml = Array.from(dataMap[key]).map(item => `<div class="directory-item">${item}</div>`).join('');
+                let icon = tab === 'lecturer' ? 'fa-user-tie' : 'fa-door-open';
+                list.innerHTML += `
+                    <div class="directory-card">
+                        <div style="font-weight: 900; color: var(--primary); font-size: 1rem;"><i class="fas ${icon}"></i> ${key}</div>
+                        <div style="margin-top: 10px;">${itemsHtml}</div>
+                    </div>
+                `;
+            });
+        }
+
+        // 11. FIREBASE CHAT & CLOUD SYNC LOGIC
         function loginForSync() { 
             const provider = new firebase.auth.GoogleAuthProvider(); 
             auth.signInWithPopup(provider)
             .then(res => {
-                alert(`Zalogowano jako ${res.user.displayName}! Chmura jest aktywna.`);
+                alert(`Zalogowano jako ${res.user.displayName}!`);
                 renderCalendar();
             })
             .catch(e => alert("Błąd: " + e.message)); 
+        }
+
+        // FUNKCJE EMOJI
+        function toggleEmojiPicker(inputId) {
+            const picker = document.getElementById('global-emoji-picker');
+            if (picker.style.display === 'grid') {
+                picker.style.display = 'none';
+            } else {
+                picker.style.display = 'grid';
+                // Przypinamy aktualny input do atrybutu, żeby wiedzieć gdzie wstawić emoji
+                picker.setAttribute('data-target-input', inputId);
+            }
+        }
+
+        function insertEmoji(defaultInputId, emoji) {
+            const picker = document.getElementById('global-emoji-picker');
+            const targetId = picker.getAttribute('data-target-input') || defaultInputId;
+            const input = document.getElementById(targetId);
+            if (input) {
+                input.value += emoji;
+                input.focus();
+            }
+            picker.style.display = 'none';
         }
 
         function sendChat(cardId, e) { 
@@ -858,6 +946,7 @@
             const win = document.getElementById('global-chat-window');
             if (win.style.display === 'flex') {
                 win.style.display = 'none';
+                document.getElementById('global-emoji-picker').style.display = 'none';
             } else {
                 win.style.display = 'flex';
                 listenGlobalChat();
@@ -877,6 +966,7 @@
                     const m = doc.data(); const isMe = m.uid === auth.currentUser?.uid; 
                     const avatarUrl = m.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.author) + '&background=random';
                     
+                    // ZMIANA PRO: Dodany awatar dla isMe
                     box.innerHTML += `
                     <div class="chat-message-wrapper ${isMe ? 'me' : 'other'}">
                         ${!isMe ? `<img src="${avatarUrl}" class="chat-avatar" alt="Avatar">` : ''}
@@ -884,6 +974,7 @@
                             <div style="font-size: 0.65rem; opacity: 0.7; margin-bottom: 2px; font-weight: bold;">${m.author}</div>
                             ${m.text}
                         </div>
+                        ${isMe ? `<img src="${avatarUrl}" class="chat-avatar" alt="Avatar">` : ''}
                     </div>`; 
                 }); 
                 box.scrollTop = box.scrollHeight; 
@@ -903,7 +994,10 @@
                 photoURL: user.photoURL || '',
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(), 
                 uid: user.uid 
-            }).then(() => inp.value = ''); 
+            }).then(() => {
+                inp.value = '';
+                document.getElementById('global-emoji-picker').style.display = 'none';
+            }); 
         }
 
         // --- OBSŁUGA ZMIANY KONTA I ZDJĘCIA W MENU ---
