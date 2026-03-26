@@ -582,7 +582,14 @@
                 }); 
                 box.scrollTop = box.scrollHeight; 
             }, error => {
-                box.innerHTML = `<div style="text-align:center; color: var(--danger); font-size: 0.8rem; padding: 10px;"><i class="fas fa-exclamation-triangle"></i> Zaloguj się przez Google (Menu Bocznego), aby czytać i pisać.</div>`;
+                // Tuta wyciągamy klikalny link od Google!
+                const errorText = error.message;
+                const linkMatch = errorText.match(/https:\/\/console\.firebase\.google\.com[^\s]*/);
+                const clickableLink = linkMatch ? `<br><br><a href="${linkMatch[0]}" target="_blank" style="color: blue; text-decoration: underline;"><b>KLIKNIJ TUTAJ, ABY UTWORZYĆ INDEKS</b></a>` : '';
+
+                box.innerHTML = `<div style="text-align:center; color: var(--danger); font-size: 0.8rem; padding: 10px; word-break: break-word;">
+                    <i class="fas fa-exclamation-triangle"></i> <b>Błąd bazy:</b> ${errorText} ${clickableLink}
+                </div>`;
             }); 
         }
 
