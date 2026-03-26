@@ -1,7 +1,7 @@
 // ==========================================
 // 🛠️ SEKCJA DLA PROGRAMISTY - KONFIGURACJA
 // ==========================================
-const ADMIN_EMAILS = ["hubertwieczorekk@gmail.com"];
+const ADMIN_UIDS = ["tnVRAgmiTfepreJlzTk3wR3L6w72"];
 
 const firebaseConfig = { 
     apiKey: "AIzaSyDCg9gIaAG-dgf45R76ovT22fBSY0-eR98", 
@@ -103,18 +103,23 @@ let scheduleData = JSON.parse(localStorage.getItem('smartPlanData')) || defaultD
 
 function saveData() { 
     localStorage.setItem('smartPlanData', JSON.stringify(scheduleData)); 
-    if(auth.currentUser) db.collection("users").doc(auth.currentUser.uid).set({ plan: JSON.stringify(scheduleData) }, { merge: true });
+    if(auth.currentUser) {
+        db.collection("users").doc(auth.currentUser.uid).collection("private").doc("main")
+          .set({ plan: scheduleData }, { merge: true });
+    }
     updateUserPresence();
 }
 
 let gradesData = JSON.parse(localStorage.getItem('smartPlanGrades')) || {};
 function saveGrades() { 
     localStorage.setItem('smartPlanGrades', JSON.stringify(gradesData)); 
-    if(auth.currentUser) db.collection("users").doc(auth.currentUser.uid).set({ grades: JSON.stringify(gradesData) }, { merge: true });
+    if(auth.currentUser) {
+        db.collection("users").doc(auth.currentUser.uid).collection("private").doc("main")
+          .set({ grades: gradesData }, { merge: true });
+    }
     updateUserPresence();
 }
 
-// NAPRAWIONA REJESTRACJA SERVICE WORKERA (PWA)
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -291,7 +296,7 @@ function sendMail(email, sub, e) { e.stopPropagation(); if (!email) return alert
 function toggleCancelClass(w, d, c, dateStr, e) { 
     e.stopPropagation(); 
     const user = auth.currentUser;
-    const isAdmin = user && ADMIN_EMAILS.includes(user.email);
+    const isAdmin = user && ADMIN_UIDS.includes(user.uid);
     const cardId = `${w}-${d}-${c}`;
     const cls = scheduleData[w][d][c];
     
@@ -305,7 +310,16 @@ function toggleCancelClass(w, d, c, dateStr, e) {
     } 
     else if (user) {
         if (confirm("Czy chcesz zaproponować Adminowi zmianę dla CAŁEGO ROKU?\n\n[OK] - Wyślij prośbę do Starosty (Zaproponuj Globalnie)\n[Anuluj] - Zmień tylko na moim telefonie")) {
-            db.collection("admin_requests").add({ type: "cancel", cardId: cardId, dateStr: dateStr, subject: cls.subject, requester: user.displayName || "Student", status: "pending", timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            db.collection("admin_requests").add({ 
+                type: "cancel", 
+                cardId: cardId, 
+                dateStr: dateStr, 
+                subject: cls.subject, 
+                requester: user.displayName || "Student", 
+                uid: user.uid, 
+                status: "pending", 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            });
             alert("Wysłano prośbę do Admina! Czeka na zatwierdzenie.");
         }
     }
@@ -317,7 +331,7 @@ function toggleCancelClass(w, d, c, dateStr, e) {
 function markExam(w, d, c, dateStr, e) { 
     if(e) e.stopPropagation(); 
     const user = auth.currentUser;
-    const isAdmin = user && ADMIN_EMAILS.includes(user.email);
+    const isAdmin = user && ADMIN_UIDS.includes(user.uid);
     const cardId = `${w}-${d}-${c}`;
     const cls = scheduleData[w][d][c];
 
@@ -331,7 +345,16 @@ function markExam(w, d, c, dateStr, e) {
     }
     else if (user) {
         if (confirm("Czy chcesz zaproponować Adminowi ustawienie tego Kolokwium dla CAŁEGO ROKU?\n\n[OK] - Wyślij prośbę do Starosty (Zaproponuj Globalnie)\n[Anuluj] - Zmień tylko na moim telefonie")) {
-            db.collection("admin_requests").add({ type: "exam", cardId: cardId, dateStr: dateStr, subject: cls.subject, requester: user.displayName || "Student", status: "pending", timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+            db.collection("admin_requests").add({ 
+                type: "exam", 
+                cardId: cardId, 
+                dateStr: dateStr, 
+                subject: cls.subject, 
+                requester: user.displayName || "Student", 
+                uid: user.uid, 
+                status: "pending", 
+                timestamp: firebase.firestore.FieldValue.serverTimestamp() 
+            });
             alert("Wysłano prośbę do Admina! Czeka na zatwierdzenie.");
         }
     }
@@ -719,11 +742,10 @@ function listenForMessages(cardId) {
         snap.forEach(doc => { 
             const m = doc.data(); const msgId = doc.id; 
             const isMe = m.uid === auth.currentUser?.uid; 
-            const isAdmin = auth.currentUser && ADMIN_EMAILS.includes(auth.currentUser.email);
+            const isAdmin = auth.currentUser && ADMIN_UIDS.includes(auth.currentUser.uid);
             const canDelete = isMe || isAdmin;
             const avatarUrl = m.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.author) + '&background=random';
             
-            // XSS FIX: Użycie escapeHTML(m.text)
             box.innerHTML += `
             <div class="chat-message-wrapper ${isMe ? 'me' : 'other'}">
                 ${!isMe ? `<img src="${avatarUrl}" class="chat-avatar" alt="Avatar">` : ''}
@@ -854,11 +876,10 @@ function openSpecificChat(cardId, title) {
         snap.forEach(doc => { 
             const m = doc.data(); const msgId = doc.id;
             const isMe = m.uid === auth.currentUser?.uid; 
-            const isAdmin = auth.currentUser && ADMIN_EMAILS.includes(auth.currentUser.email);
+            const isAdmin = auth.currentUser && ADMIN_UIDS.includes(auth.currentUser.uid);
             const canDelete = isMe || isAdmin;
             const avatarUrl = m.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.author) + '&background=random';
             
-            // XSS FIX: Użycie escapeHTML(m.text)
             box.innerHTML += `
             <div class="chat-message-wrapper ${isMe ? 'me' : 'other'}">
                 ${!isMe ? `<img src="${avatarUrl}" class="chat-avatar" alt="Avatar">` : ''}
@@ -913,15 +934,58 @@ auth.onAuthStateChanged(user => {
             loginIcon.innerHTML = `<img src="${safeAvatar}" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">`;
         }
         
-        if (adminBtn) adminBtn.style.display = ADMIN_EMAILS.includes(user.email) ? 'flex' : 'none';
+        if (adminBtn) adminBtn.style.display = ADMIN_UIDS.includes(user.uid) ? 'flex' : 'none';
 
-        db.collection("users").doc(user.uid).get().then(doc => {
-            if (doc.exists) {
-                const data = doc.data();
-                if (data.plan) { scheduleData = JSON.parse(data.plan); localStorage.setItem('smartPlanData', data.plan); }
-                if (data.grades) { gradesData = JSON.parse(data.grades); localStorage.setItem('smartPlanGrades', data.grades); }
+        // --- BEZPIECZNA MIGRACJA I ODCZYT DANYCH ---
+        db.collection("users").doc(user.uid).get().then(docRoot => {
+            let oldData = docRoot.exists ? docRoot.data() : {};
+
+            db.collection("users").doc(user.uid).collection("private").doc("main").get().then(docPriv => {
+                let planToLoad = null;
+                let gradesToLoad = null;
+                let newData = docPriv.exists ? docPriv.data() : {};
+
+                if (newData.plan) planToLoad = newData.plan;
+                if (newData.grades) gradesToLoad = newData.grades;
+
+                let needsMigration = false;
+                let migratedPlan = null;
+                let migratedGrades = null;
+
+                // Próba odzyskania starych danych, jeśli w nowym sejfie jest pusto
+                if (!planToLoad && oldData.plan) {
+                    try { migratedPlan = JSON.parse(oldData.plan); needsMigration = true; } 
+                    catch(e) { console.warn("Błąd parsowania starego planu:", e); }
+                }
+                if (!gradesToLoad && oldData.grades) {
+                    try { migratedGrades = JSON.parse(oldData.grades); needsMigration = true; } 
+                    catch(e) { console.warn("Błąd parsowania starych ocen:", e); }
+                }
+
+                if (needsMigration) {
+                    console.log("Migracja do sejfu...");
+                    if (migratedPlan) planToLoad = migratedPlan;
+                    if (migratedGrades) gradesToLoad = migratedGrades;
+
+                    let payload = {};
+                    if (migratedPlan) payload.plan = migratedPlan;
+                    if (migratedGrades) payload.grades = migratedGrades;
+                    
+                    // Zapisujemy jako bezpieczne obiekty w podkolekcji
+                    db.collection("users").doc(user.uid).collection("private").doc("main").set(payload, { merge: true });
+
+                    // Sprzątanie starych, wrażliwych pól z profilu głównego
+                    db.collection("users").doc(user.uid).update({
+                        plan: firebase.firestore.FieldValue.delete(),
+                        grades: firebase.firestore.FieldValue.delete()
+                    }).catch(e => console.log("Sprzątanie zakończone lub brak uprawnień."));
+                }
+
+                if (planToLoad) { scheduleData = planToLoad; localStorage.setItem('smartPlanData', JSON.stringify(scheduleData)); }
+                if (gradesToLoad) { gradesData = gradesToLoad; localStorage.setItem('smartPlanGrades', JSON.stringify(gradesData)); }
+                
                 renderCalendar(); updateDashboard();
-            }
+            });
         }).catch(e => console.error("Błąd chmury:", e));
 
         updateUserPresence();
