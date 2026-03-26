@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Plan v4.0 PRO Admin</title>
+    <title>Smart Plan v4.1 PRO Admin</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -104,10 +104,16 @@
 
         .grade-input-wrapper { display: flex; gap: 10px; align-items: center; }
         .todo-global-item { background: var(--bg-color); padding: 12px; border-radius: 10px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; }
-        .chat-box { max-height: 150px; overflow-y: auto; background: var(--toggle-bg); border-radius: 8px; padding: 10px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
-        .chat-bubble { padding: 6px 10px; border-radius: 10px; max-width: 90%; font-size: 0.75rem; word-wrap: break-word; }
-        .chat-bubble.me { background: var(--primary); color: white; align-self: flex-end; }
-        .chat-bubble.other { background: var(--card-bg); border: 1px solid var(--toggle-bg); align-self: flex-start; }
+        .chat-box { max-height: 250px; overflow-y: auto; background: var(--toggle-bg); border-radius: 8px; padding: 10px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+        
+        /* ZMIANA CHAT BUBBLE DLA AWATARÓW */
+        .chat-message-wrapper { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 5px; width: 100%; }
+        .chat-message-wrapper.me { justify-content: flex-end; }
+        .chat-message-wrapper.other { justify-content: flex-start; }
+        .chat-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.1); background: white; }
+        .chat-bubble { padding: 8px 12px; border-radius: 15px; max-width: 75%; font-size: 0.8rem; word-wrap: break-word; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .chat-bubble.me { background: var(--primary); color: white; border-bottom-right-radius: 4px; }
+        .chat-bubble.other { background: var(--card-bg); border: 1px solid var(--toggle-bg); border-bottom-left-radius: 4px; }
 
         /* GLOBAL CHAT STYLES */
         #global-chat-btn { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0, 0.3); z-index: 9000; transition: 0.3s; }
@@ -126,6 +132,26 @@
     </style>
 </head>
 <body>
+
+    <script>
+        // --- TARCZA ANTY-CIEKAWSKI STUDENT (Poziom 1) ---
+        // Blokada prawego przycisku myszy
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // Blokada skrótów deweloperskich i podglądu kodu
+        document.onkeydown = function(e) {
+            // F12
+            if(e.keyCode === 123) return false;
+            // Ctrl+Shift+I (Narzędzia deweloperskie)
+            if(e.ctrlKey && e.shiftKey && e.keyCode === 'I'.charCodeAt(0)) return false;
+            // Ctrl+Shift+C (Wybieranie elementu)
+            if(e.ctrlKey && e.shiftKey && e.keyCode === 'C'.charCodeAt(0)) return false;
+            // Ctrl+Shift+J (Konsola)
+            if(e.ctrlKey && e.shiftKey && e.keyCode === 'J'.charCodeAt(0)) return false;
+            // Ctrl+U (Podgląd źródła strony)
+            if(e.ctrlKey && e.keyCode === 'U'.charCodeAt(0)) return false;
+        };
+    </script>
 
     <div id="mute-alert-overlay">
         <i class="fas fa-bell-slash"></i>
@@ -229,7 +255,7 @@
 
     <footer class="site-footer">
         <div class="footer-content">
-            <div class="footer-brand"><i class="fas fa-graduation-cap"></i> Smart Plan <span class="version-badge">v4.0 PRO Admin</span></div>
+            <div class="footer-brand"><i class="fas fa-graduation-cap"></i> Smart Plan <span class="version-badge">v4.1 PRO Admin</span></div>
             <div>Stworzone z ❤️ dla inżynierów AiR</div>
         </div>
         <div class="footer-links">
@@ -252,7 +278,7 @@
             <div style="text-align:center; padding:10px; font-size:0.8rem; color:var(--text-muted);">Kliknij przycisk, aby połączyć się z serwerem...</div>
         </div>
         <div id="global-chat-input-area">
-            <input type="text" id="global-chat-input" placeholder="Napisz do wszystkich na roku..." onkeypress="if(event.key === 'Enter') sendGlobalChat()">
+            <input type="text" id="global-chat-input" placeholder="Napisz i wyślij Enter..." onkeypress="if(event.key === 'Enter') sendGlobalChat()">
             <button class="btn" style="border-radius: 50%; width: 40px; height: 40px; padding: 0; justify-content: center;" onclick="sendGlobalChat()"><i class="fas fa-paper-plane"></i></button>
         </div>
     </div>
@@ -261,7 +287,7 @@
     <div class="modal" id="customDatePickerModal" onclick="closeCustomDatePicker()"><div class="modal-content" onclick="event.stopPropagation()" style="max-width: 350px; padding: 20px;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><button class="btn-icon btn-outline" style="padding: 8px;" onclick="changePickerMonth(-1)"><i class="fas fa-chevron-left"></i></button><h3 id="pickerMonthYear" style="color: var(--primary); margin: 0;">Miesiąc</h3><button class="btn-icon btn-outline" style="padding: 8px;" onclick="changePickerMonth(1)"><i class="fas fa-chevron-right"></i></button></div><div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.8rem; font-weight: bold; color: var(--text-muted); margin-bottom: 10px;"><div>Pn</div><div>Wt</div><div>Śr</div><div>Cz</div><div>Pt</div><div>Sb</div><div>Nd</div></div><div id="pickerDaysGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;"></div><div style="margin-top: 20px; text-align: center;"><button class="btn btn-outline" style="width: 100%;" onclick="jumpToToday(); closeCustomDatePicker();">Wróć do dzisiaj</button></div></div></div>
     <div class="modal" id="qrModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="text-align: center;"><h2>Zeskanuj plan</h2><p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Aparat w telefonie otworzy ten plan.</p><div id="qrcode" style="display: inline-block; background: white; padding: 15px; border-radius: 10px; margin: 0 auto;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('qrModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="bugModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--danger);"><i class="fas fa-bug"></i> Zgłoś Błąd</h2><textarea id="bugDescription" class="notes-textarea" placeholder="Napisz tutaj, co poszło nie tak..." style="min-height: 120px; font-size: 0.95rem; padding: 10px;"></textarea><div style="display: flex; gap: 10px; margin-top: 15px;"><button class="btn btn-outline" style="flex: 1;" onclick="document.getElementById('bugModal').style.display='none'">Anuluj</button><button class="btn" style="flex: 1; background: var(--danger); border-color: var(--danger);" onclick="sendBugReport()">Wyślij</button></div></div></div>
-    <div class="modal" id="changelogModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-rocket"></i> Historia Aktualizacji</h2><div style="max-height: 55vh; overflow-y: auto; padding-right: 15px; border-left: 2px solid var(--toggle-bg); padding-left: 10px; margin-left: 5px;"><div class="changelog-item"><div class="changelog-version">v4.0 PRO ADMIN <span class="changelog-date">Teraz</span></div><ul><li><strong>PANEL ADMINA:</strong> Użytkownicy mogą proponować odwołania i kolokwia globalnie. Admin (Ty) zatwierdza je ze specjalnego panelu!</li><li>Dalsze poprawki stabilności i optymalizacja synchronizacji chmury.</li></ul></div></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('changelogModal').style.display='none'">Zamknij</button></div></div>
+    <div class="modal" id="changelogModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-rocket"></i> Historia Aktualizacji</h2><div style="max-height: 55vh; overflow-y: auto; padding-right: 15px; border-left: 2px solid var(--toggle-bg); padding-left: 10px; margin-left: 5px;"><div class="changelog-item"><div class="changelog-version">v4.1 PRO ADMIN <span class="changelog-date">Teraz</span></div><ul><li><strong>Google Avatars:</strong> Zdjęcia z konta Google pojawiają się w lewym menu oraz w dymkach na czacie!</li><li><strong>Anty-Ciekawski:</strong> Kod zablokowany przed "Badaniem elementu" (F12, Prawy Klik).</li></ul></div></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('changelogModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="radarModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--danger);"><i class="fas fa-radar"></i> Radar Kolokwiów</h2><div id="radar-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 50vh; overflow-y: auto; padding-right: 5px;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('radarModal').style.display='none'">Biorę się za naukę!</button></div></div>
     <div class="modal" id="gradesModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column;"><h2 style="color: var(--primary); margin-bottom: 5px;"><i class="fas fa-graduation-cap"></i> Średnia Ocen</h2><p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Wpisz oceny (np. 5, 4.5, 3).</p><div id="grades-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('gradesModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="globalTasksModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column;"><h2 style="color: var(--success); margin-bottom: 5px;"><i class="fas fa-tasks"></i> Zbiorcze Zadania</h2><p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Wszystkie zadania ze wszystkich przedmiotów w jednym miejscu.</p><div id="global-tasks-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('globalTasksModal').style.display='none'">Zamknij</button></div></div>
@@ -278,7 +304,7 @@
 
     <script>
         // 1. WERSJONOWANIE I NAPRAWA CACHE
-        const APP_VERSION = "4.0.0-ADMIN";
+        const APP_VERSION = "4.1.0-ADMIN";
         const ADMIN_EMAILS = ["hubertwieczorekk@gmail.com"]; // TWÓJ EMAIL JAKO GŁÓWNY ADMIN
 
         if ('serviceWorker' in navigator) {
@@ -407,7 +433,6 @@
                         let isOngoing = (columnDateStr === todayStr && currentMins >= startMins && currentMins <= endMins);
                         let progressPercent = isOngoing ? ((currentMins - startMins) / (endMins - startMins)) * 100 : 0;
                         
-                        // ZMIANA PRO ADMIN: Sprawdzanie globalnych zdarzeń
                         let isCancelledLocal = cls.cancelledDates && cls.cancelledDates.includes(columnDateStr);
                         let isCancelledGlobal = globalAdminEvents.cancelled[cardId] && globalAdminEvents.cancelled[cardId].includes(columnDateStr);
                         let isCancelled = isCancelledLocal || isCancelledGlobal;
@@ -507,7 +532,6 @@
         function saveNote(w, d, c, e) { scheduleData[w][d][c].notes = e.target.value; saveData(); }
         function sendMail(email, sub, e) { e.stopPropagation(); if (!email) return alert("Brak maila do wykładowcy."); window.location.href = `mailto:${email}?subject=${sub}`; }
         
-        // ---- SYSTEM ZATWIERDZANIA ZMIAN (PROPOSAL LOGIC) ----
         function toggleCancelClass(w, d, c, dateStr, e) { 
             e.stopPropagation(); 
             const user = auth.currentUser;
@@ -515,7 +539,6 @@
             const cardId = `${w}-${d}-${c}`;
             const cls = scheduleData[w][d][c];
             
-            // Kiedy klika ADMIN:
             if (isAdmin) {
                 if (confirm("👑 Zalogowano jako Starosta (Admin)!\n\nCzy chcesz odwołać te zajęcia GLOBALNIE dla wszystkich studentów na roku?\n\n[OK] - Zmień Globalnie\n[Anuluj] - Zmień tylko w moim telefonie")) {
                     let currentCancelled = globalAdminEvents.cancelled[cardId] || [];
@@ -524,7 +547,6 @@
                     return; 
                 }
             } 
-            // Kiedy klika STUDENT (i ma połączenie z bazą):
             else if (user) {
                 if (confirm("Czy chcesz zaproponować Adminowi zmianę dla CAŁEGO ROKU?\n\n[OK] - Wyślij prośbę do Starosty (Zaproponuj Globalnie)\n[Anuluj] - Zmień tylko na moim telefonie")) {
                     db.collection("admin_requests").add({
@@ -535,7 +557,6 @@
                 }
             }
 
-            // Zapis tylko lokalny (dla wszystkich, jeśli kliknęli 'Anuluj' lub nie są zalogowani)
             if (cls.cancelledDates.includes(dateStr)) cls.cancelledDates = cls.cancelledDates.filter(dx => dx !== dateStr); else cls.cancelledDates.push(dateStr); 
             saveData(); renderCalendar(); 
         }
@@ -572,7 +593,6 @@
 
         function markAttendance(w, d, c, dateStr, status, e) { e.stopPropagation(); let cls = scheduleData[w][d][c]; let isPres = cls.attendedDates.includes(dateStr); let isAbs = cls.absentDates.includes(dateStr); cls.attendedDates = cls.attendedDates.filter(x => x !== dateStr); cls.absentDates = cls.absentDates.filter(x => x !== dateStr); if(status === 'present' && !isPres) cls.attendedDates.push(dateStr); if(status === 'absent' && !isAbs) cls.absentDates.push(dateStr); saveData(); renderCalendar(); }
 
-        // --- PANEL ADMINA (WNIOSKI) ---
         function openAdminPanel() {
             toggleSidebar();
             const list = document.getElementById('admin-requests-list');
@@ -612,7 +632,6 @@
 
         function resolveRequest(reqId, type, cardId, dateStr, isApproved) {
             if (isApproved) {
-                // Dodajemy do globalnej bazy
                 if (type === 'cancel') {
                     let current = globalAdminEvents.cancelled[cardId] || [];
                     if (!current.includes(dateStr)) current.push(dateStr);
@@ -623,7 +642,6 @@
                     db.collection("global_state").doc("events").set({ exams: { ...globalAdminEvents.exams, [cardId]: current } }, { merge: true });
                 }
             }
-            // Zmieniamy status w bazie, żeby wniosek zniknął
             db.collection("admin_requests").doc(reqId).update({ status: isApproved ? "approved" : "rejected" });
         }
 
@@ -670,7 +688,7 @@
             document.getElementById('radarModal').style.display = 'flex';
         }
 
-        // 9. DASHBOARD I ZEGAR
+        // 9. DASHBOARD I ZEGAR (POMIJANIE GLOBALNIE ODWOŁANYCH)
         function updateDashboard() {
             const now = new Date(); const todayStr = formatDateStr(now); const currentMins = now.getHours() * 60 + now.getMinutes(); const currentSecs = now.getSeconds();
             const weekType = getWeekTypeForDate(now); const currentDayIndex = now.getDay() - 1; const specialDay = checkSpecialDay(todayStr);
@@ -687,7 +705,7 @@
                     let cardId = `${weekType}-${currentDayIndex}-${cls.origIdx}`;
                     let isCancelledLocal = cls.cancelledDates && cls.cancelledDates.includes(todayStr);
                     let isCancelledGlobal = globalAdminEvents.cancelled[cardId] && globalAdminEvents.cancelled[cardId].includes(todayStr);
-                    if (isCancelledLocal || isCancelledGlobal) continue;
+                    if (isCancelledLocal || isCancelledGlobal) continue; // Pomiń odwołane z dashboardu
 
                     const startMin = parseInt(cls.start.split(':')[0])*60 + parseInt(cls.start.split(':')[1]);
                     if(startMin > currentMins) { nextClass = cls; timeToNextMins = startMin - currentMins; break; }
@@ -705,7 +723,7 @@
             } else w.style.display = 'none';
         }
 
-        // 10. MODUŁY PRO: ŚREDNIA, ZADANIA ZBIORCZE I FREKWENCJA
+        // 10. ŚREDNIA, ZADANIA ZBIORCZE I FREKWENCJA
         function openGradesModal() { toggleSidebar(); const list = document.getElementById('grades-list'); list.innerHTML = ''; let subjects = new Set(); ['TN', 'TP'].forEach(w => { for(let d=0; d<5; d++) { (scheduleData[w][d] || []).forEach(cls => { let name = cls.subject.replace(/ \(wyk\.\)|\.\.\./g, '').trim(); subjects.add(name); }); } }); Array.from(subjects).sort().forEach(sub => { if(!gradesData[sub]) gradesData[sub] = ""; let gradesStr = gradesData[sub]; let avg = calculateAverage(gradesStr); list.innerHTML += `<div style="background: var(--bg-color); padding: 12px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid ${avg >= 3 ? 'var(--success)' : (avg > 0 ? 'var(--danger)' : 'var(--text-muted)')};"><div style="font-weight: bold; font-size: 0.95rem; margin-bottom: 8px; color: var(--text-main);">${sub}</div><div class="grade-input-wrapper"><input type="text" placeholder="Brak ocen (np. 4.5, 3)..." value="${gradesStr}" onchange="updateGrade('${sub}', this.value)" style="flex: 1; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--toggle-bg); background: var(--card-bg); color: var(--text-main); font-size: 0.9rem; outline: none;"><div style="font-weight: 900; color: ${avg >= 3 ? 'var(--success)' : (avg > 0 ? 'var(--danger)' : 'var(--text-muted)')}; font-size: 1.2rem; min-width: 45px; text-align: center;">${avg > 0 ? avg.toFixed(2) : '-'}</div></div></div>`; }); document.getElementById('gradesModal').style.display = 'flex'; }
         function calculateAverage(str) { if(!str) return 0; let nums = str.replace(/,/g, '.').split(/[\s;]+/).map(Number).filter(n => !isNaN(n) && n >= 2 && n <= 5); if(nums.length === 0) return 0; let sum = nums.reduce((a, b) => a + b, 0); return sum / nums.length; }
         function updateGrade(sub, val) { gradesData[sub] = val; saveGrades(); openGradesModal(); }
@@ -782,12 +800,12 @@
             document.getElementById('attendanceModal').style.display = 'flex';
         }
 
-        // 11. FIREBASE CHAT & CLOUD SYNC LOGIC
+        // 11. FIREBASE CHAT & CLOUD SYNC LOGIC (Z AWATARAMI)
         function loginForSync() { 
             const provider = new firebase.auth.GoogleAuthProvider(); 
             auth.signInWithPopup(provider)
             .then(res => {
-                alert(`Zalogowano jako ${res.user.displayName}!`);
+                alert(`Zalogowano jako ${res.user.displayName}! Chmura jest aktywna.`);
                 renderCalendar();
             })
             .catch(e => alert("Błąd: " + e.message)); 
@@ -798,7 +816,14 @@
             const user = auth.currentUser; 
             if(!user) { alert("Zaloguj się z Menu, żeby pisać na forum!"); return loginForSync(); } 
             const inp = document.getElementById(`chat-in-${cardId}`); if(!inp.value.trim()) return; 
-            db.collection("chats").add({ classId: cardId, author: user.displayName, text: inp.value, timestamp: firebase.firestore.FieldValue.serverTimestamp(), uid: user.uid }).then(() => inp.value = ''); 
+            db.collection("chats").add({ 
+                classId: cardId, 
+                author: user.displayName, 
+                text: inp.value, 
+                photoURL: user.photoURL || '',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(), 
+                uid: user.uid 
+            }).then(() => inp.value = ''); 
         }
 
         function listenForMessages(cardId) { 
@@ -810,7 +835,17 @@
                 box.innerHTML = snap.empty ? '<div style="text-align:center; opacity:0.5; font-size: 0.8rem; padding: 10px;">Bądź pierwszy!</div>' : ''; 
                 snap.forEach(doc => { 
                     const m = doc.data(); const isMe = m.uid === auth.currentUser?.uid; 
-                    box.innerHTML += `<div class="chat-bubble ${isMe ? 'me' : 'other'}"><div style="font-size: 0.6rem; opacity: 0.7; margin-bottom: 2px; font-weight: bold;">${m.author}</div>${m.text}</div>`; 
+                    const avatarUrl = m.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.author) + '&background=random';
+                    
+                    box.innerHTML += `
+                    <div class="chat-message-wrapper ${isMe ? 'me' : 'other'}">
+                        ${!isMe ? `<img src="${avatarUrl}" class="chat-avatar" alt="Avatar">` : ''}
+                        <div class="chat-bubble ${isMe ? 'me' : 'other'}">
+                            <div style="font-size: 0.6rem; opacity: 0.7; margin-bottom: 2px; font-weight: bold;">${m.author}</div>
+                            ${m.text}
+                        </div>
+                        ${isMe ? `<img src="${avatarUrl}" class="chat-avatar" alt="Avatar">` : ''}
+                    </div>`; 
                 }); 
                 box.scrollTop = box.scrollHeight; 
             }, error => {
@@ -840,7 +875,16 @@
                 box.innerHTML = snap.empty ? '<div style="text-align:center; opacity:0.5; font-size: 0.8rem; padding: 10px;">Napisz pierwszą wiadomość do rocznika!</div>' : ''; 
                 snap.forEach(doc => { 
                     const m = doc.data(); const isMe = m.uid === auth.currentUser?.uid; 
-                    box.innerHTML += `<div class="chat-bubble ${isMe ? 'me' : 'other'}"><div style="font-size: 0.65rem; opacity: 0.7; margin-bottom: 2px; font-weight: bold;">${m.author}</div>${m.text}</div>`; 
+                    const avatarUrl = m.photoURL || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(m.author) + '&background=random';
+                    
+                    box.innerHTML += `
+                    <div class="chat-message-wrapper ${isMe ? 'me' : 'other'}">
+                        ${!isMe ? `<img src="${avatarUrl}" class="chat-avatar" alt="Avatar">` : ''}
+                        <div class="chat-bubble ${isMe ? 'me' : 'other'}">
+                            <div style="font-size: 0.65rem; opacity: 0.7; margin-bottom: 2px; font-weight: bold;">${m.author}</div>
+                            ${m.text}
+                        </div>
+                    </div>`; 
                 }); 
                 box.scrollTop = box.scrollHeight; 
             }, error => {
@@ -852,17 +896,24 @@
             const user = auth.currentUser; 
             if(!user) { alert("Zaloguj się z Menu, żeby pisać na forum globalnym!"); return loginForSync(); } 
             const inp = document.getElementById(`global-chat-input`); if(!inp.value.trim()) return; 
-            db.collection("chats").add({ classId: "GLOBAL", author: user.displayName, text: inp.value, timestamp: firebase.firestore.FieldValue.serverTimestamp(), uid: user.uid }).then(() => inp.value = ''); 
+            db.collection("chats").add({ 
+                classId: "GLOBAL", 
+                author: user.displayName, 
+                text: inp.value, 
+                photoURL: user.photoURL || '',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(), 
+                uid: user.uid 
+            }).then(() => inp.value = ''); 
         }
 
-        // --- OBSŁUGA ZMIANY KONTA ---
+        // --- OBSŁUGA ZMIANY KONTA I ZDJĘCIA W MENU ---
         auth.onAuthStateChanged(user => {
             const loginBtn = document.getElementById('login-menu-btn');
             const adminBtn = document.getElementById('admin-panel-btn');
             
             if(user) {
                 console.log("Zalogowano:", user.displayName);
-                if(loginBtn) loginBtn.innerHTML = `<i class="fas fa-cloud-check" style="color: var(--success)"></i> Zsynchronizowano: ${user.displayName}`;
+                if(loginBtn) loginBtn.innerHTML = `<img src="${user.photoURL || 'https://via.placeholder.com/24'}" onerror="this.src='https://via.placeholder.com/24'" style="width: 24px; height: 24px; border-radius: 50%; object-fit: cover;"> <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Zsynchronizowano: ${user.displayName.split(' ')[0]}</span>`;
                 
                 if (ADMIN_EMAILS.includes(user.email)) {
                     if(adminBtn) adminBtn.style.display = 'flex';
