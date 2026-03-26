@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Plan v3.8 PRO Cloud</title>
+    <title>Smart Plan v3.9 PRO Admin</title>
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -67,10 +67,14 @@
         .class-time { font-weight: 700; font-size: 0.9rem; color: var(--primary); display: flex; align-items: center; gap: 6px; margin-bottom: 8px; } .class-subject { font-size: 1.05rem; font-weight: 600; margin-bottom: 8px; line-height: 1.3; } .class-details { font-size: 0.85rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 5px; margin-bottom: 10px; }
         .card-header-tags { display: flex; flex-wrap: wrap; gap: 5px; justify-content: flex-start; align-items: flex-start; margin-bottom: 8px; padding-right: 40px; }
         .type-badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; color: white; }
+        
         .kolokwium-badge { background: var(--danger); color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; animation: pulse 2s infinite; display: inline-flex; align-items: center; gap: 4px; } .kolokwium-badge i { font-size: 0.6rem; }
+        .kolokwium-global-badge { background: #8b5cf6; color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; animation: pulse 2s infinite; display: inline-flex; align-items: center; gap: 4px; box-shadow: 0 0 10px rgba(139, 92, 246, 0.5); }
         
         .class-card.cancelled { border-left-color: var(--text-muted); background: var(--toggle-bg); opacity: 0.7; } .class-card.cancelled .class-subject { text-decoration: line-through; color: var(--text-muted); } .class-card.cancelled .type-badge { background: var(--text-muted) !important; }
         .cancelled-stamp { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-15deg); font-size: 2rem; color: rgba(239, 68, 68, 0.3); font-weight: 900; text-transform: uppercase; letter-spacing: 2px; pointer-events: none; border: 4px solid rgba(239, 68, 68, 0.3); padding: 5px 15px; border-radius: 10px; }
+        .cancelled-stamp.global { color: rgba(139, 92, 246, 0.5); border-color: rgba(139, 92, 246, 0.5); font-size: 1.5rem; text-align: center; }
+        
         .okienko-card { background: rgba(79, 70, 229, 0.05); border: 1px dashed var(--primary); color: var(--primary); text-align: center; padding: 10px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 8px; }
 
         .progress-container { width: 100%; background: var(--toggle-bg); height: 6px; border-radius: 3px; margin-top: 10px; overflow: hidden; display: none; } .progress-bar { height: 100%; background: var(--success); width: 0%; transition: width 1s linear; }
@@ -105,7 +109,6 @@
         .chat-bubble.me { background: var(--primary); color: white; align-self: flex-end; }
         .chat-bubble.other { background: var(--card-bg); border: 1px solid var(--toggle-bg); align-self: flex-start; }
 
-        /* GLOBAL CHAT STYLES */
         #global-chat-btn { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.8rem; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0, 0.3); z-index: 9000; transition: 0.3s; }
         #global-chat-btn:hover { transform: scale(1.1); background: var(--primary-hover); }
         #global-chat-window { display: none; position: fixed; bottom: 90px; right: 20px; width: 340px; height: 450px; background: var(--card-bg); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); z-index: 9000; flex-direction: column; overflow: hidden; border: 1px solid var(--toggle-bg); }
@@ -221,12 +224,12 @@
 
     <footer class="site-footer">
         <div class="footer-content">
-            <div class="footer-brand"><i class="fas fa-graduation-cap"></i> Smart Plan <span class="version-badge">v3.8 PRO</span></div>
+            <div class="footer-brand"><i class="fas fa-graduation-cap"></i> Smart Plan <span class="version-badge">v3.9 PRO Admin</span></div>
             <div>Stworzone z ❤️ dla inżynierów AiR</div>
         </div>
         <div class="footer-links">
             <a onclick="document.getElementById('changelogModal').style.display='flex'"><i class="fas fa-history"></i> Historia Aktualizacji</a>
-            <a onclick="alert('Polityka Cloud Sync: Po zalogowaniu Twoje oceny, zadania i plan są zapisywane prywatnie na Twoim koncie Google.')"><i class="fas fa-user-shield"></i> Prywatność</a>
+            <a onclick="alert('Polityka: Zalogowany jako Admin możesz wpływać globalnie na plan całego roku.')"><i class="fas fa-user-shield"></i> Prywatność</a>
             <a onclick="openBugModal()"><i class="fas fa-bug"></i> Zgłoś Błąd</a>
         </div>
     </footer>
@@ -253,37 +256,43 @@
     <div class="modal" id="customDatePickerModal" onclick="closeCustomDatePicker()"><div class="modal-content" onclick="event.stopPropagation()" style="max-width: 350px; padding: 20px;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;"><button class="btn-icon btn-outline" style="padding: 8px;" onclick="changePickerMonth(-1)"><i class="fas fa-chevron-left"></i></button><h3 id="pickerMonthYear" style="color: var(--primary); margin: 0;">Miesiąc</h3><button class="btn-icon btn-outline" style="padding: 8px;" onclick="changePickerMonth(1)"><i class="fas fa-chevron-right"></i></button></div><div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.8rem; font-weight: bold; color: var(--text-muted); margin-bottom: 10px;"><div>Pn</div><div>Wt</div><div>Śr</div><div>Cz</div><div>Pt</div><div>Sb</div><div>Nd</div></div><div id="pickerDaysGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;"></div><div style="margin-top: 20px; text-align: center;"><button class="btn btn-outline" style="width: 100%;" onclick="jumpToToday(); closeCustomDatePicker();">Wróć do dzisiaj</button></div></div></div>
     <div class="modal" id="qrModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="text-align: center;"><h2>Zeskanuj plan</h2><p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">Aparat w telefonie otworzy ten plan.</p><div id="qrcode" style="display: inline-block; background: white; padding: 15px; border-radius: 10px; margin: 0 auto;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('qrModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="bugModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--danger);"><i class="fas fa-bug"></i> Zgłoś Błąd</h2><textarea id="bugDescription" class="notes-textarea" placeholder="Napisz tutaj, co poszło nie tak..." style="min-height: 120px; font-size: 0.95rem; padding: 10px;"></textarea><div style="display: flex; gap: 10px; margin-top: 15px;"><button class="btn btn-outline" style="flex: 1;" onclick="document.getElementById('bugModal').style.display='none'">Anuluj</button><button class="btn" style="flex: 1; background: var(--danger); border-color: var(--danger);" onclick="sendBugReport()">Wyślij</button></div></div></div>
-    <div class="modal" id="changelogModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-rocket"></i> Historia Aktualizacji</h2><div style="max-height: 55vh; overflow-y: auto; padding-right: 15px; border-left: 2px solid var(--toggle-bg); padding-left: 10px; margin-left: 5px;"><div class="changelog-item"><div class="changelog-version">v3.8 PRO <span class="changelog-date">Teraz</span></div><ul><li><strong>Globalne Forum:</strong> Dodano okienko czatu w stylu Messengera (prawy dolny róg) dla całego roku! Działa na Enter.</li><li><strong>Naprawa Pamięci (Cache):</strong> Odświeżanie strony zawsze ładuje nową wersję – usunięto błąd cofający apkę w przeszłość do wersji 1.0!</li></ul></div></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('changelogModal').style.display='none'">Zamknij</button></div></div>
+    <div class="modal" id="changelogModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--primary); margin-bottom: 15px;"><i class="fas fa-rocket"></i> Historia Aktualizacji</h2><div style="max-height: 55vh; overflow-y: auto; padding-right: 15px; border-left: 2px solid var(--toggle-bg); padding-left: 10px; margin-left: 5px;"><div class="changelog-item"><div class="changelog-version">v3.9 PRO ADMIN <span class="changelog-date">Teraz</span></div><ul><li><strong>Uprawnienia Administratora:</strong> Twoje konto (Hubert) pozwala teraz na globalne odwoływanie zajęć i ustawianie kolokwiów dla całego roku z poziomu Twojego telefonu!</li></ul></div></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('changelogModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="radarModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()"><h2 style="color: var(--danger);"><i class="fas fa-radar"></i> Radar Kolokwiów</h2><div id="radar-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 50vh; overflow-y: auto; padding-right: 5px;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('radarModal').style.display='none'">Biorę się za naukę!</button></div></div>
     <div class="modal" id="gradesModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column;"><h2 style="color: var(--primary); margin-bottom: 5px;"><i class="fas fa-graduation-cap"></i> Średnia Ocen</h2><p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Wpisz oceny (np. 5, 4.5, 3).</p><div id="grades-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('gradesModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="globalTasksModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column;"><h2 style="color: var(--success); margin-bottom: 5px;"><i class="fas fa-tasks"></i> Zbiorcze Zadania</h2><p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Wszystkie zadania ze wszystkich przedmiotów w jednym miejscu.</p><div id="global-tasks-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('globalTasksModal').style.display='none'">Zamknij</button></div></div>
     <div class="modal" id="attendanceModal" onclick="this.style.display='none'"><div class="modal-content" onclick="event.stopPropagation()" style="max-height: 80vh; display: flex; flex-direction: column;"><h2 style="color: #3b82f6; margin-bottom: 5px;"><i class="fas fa-user-check"></i> Twoja Frekwencja</h2><p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Zestawienie obecności na wszystkich przedmiotach.</p><div id="attendance-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div><button class="btn btn-outline" style="width: 100%; margin-top: 20px;" onclick="document.getElementById('attendanceModal').style.display='none'">Zamknij</button></div></div>
 
     <script>
-        // 1. WERSJONOWANIE I NAPRAWA CACHE (GHOST PWA FIX)
-        const APP_VERSION = "3.8.0";
-        
-        // ZABICIE STAREGO SERVICE WORKERA (który cofał apkę do wersji 1.0)
+        // 1. WERSJONOWANIE I NAPRAWA CACHE
+        const APP_VERSION = "3.9.0-ADMIN";
+        const ADMIN_EMAILS = ["hubertwieczorekk@gmail.com"]; // TU JEST TWOJ EMAIL JAKO ADMIN
+
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations().then(function(registrations) {
                 for(let registration of registrations) { registration.unregister(); }
             });
         }
 
-        if (localStorage.getItem('smartPlanVersion') !== APP_VERSION) { 
-            document.getElementById('update-banner').style.display = 'block'; 
-        }
-
-        function applyUpdate() {
-            localStorage.setItem('smartPlanVersion', APP_VERSION);
-            window.location.reload(true);
-        }
+        if (localStorage.getItem('smartPlanVersion') !== APP_VERSION) { document.getElementById('update-banner').style.display = 'block'; }
+        function applyUpdate() { localStorage.setItem('smartPlanVersion', APP_VERSION); window.location.reload(true); }
 
         // 2. FIREBASE INIT
         const firebaseConfig = { apiKey: "AIzaSyDCg9gIaAG-dgf45R76ovT22fBSY0-eR98", authDomain: "smart-plan-air.firebaseapp.com", projectId: "smart-plan-air", storageBucket: "smart-plan-air.firebasestorage.app", messagingSenderId: "571923275689", appId: "1:571923275689:web:ed975c8aaa0ce4392f6eb8" };
         firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); const auth = firebase.auth();
 
-        // 3. BAZA DANYCH (Z hybrydowym zapisem CLOUD SYNC)
+        // --- GLOBALNY STAN ADMINA ---
+        let globalAdminEvents = { cancelled: {}, exams: {} };
+        db.collection("global_state").doc("events").onSnapshot(doc => {
+            if (doc.exists) {
+                globalAdminEvents = doc.data();
+                if(!globalAdminEvents.cancelled) globalAdminEvents.cancelled = {};
+                if(!globalAdminEvents.exams) globalAdminEvents.exams = {};
+                renderCalendar();
+                updateDashboard();
+            }
+        });
+
+        // 3. BAZA DANYCH
         const tnWeeksStarts = ['2026-02-23', '2026-03-09', '2026-03-23', '2026-04-06', '2026-04-20', '2026-05-04', '2026-05-18', '2026-06-01'];
         const tpWeeksStarts = ['2026-03-02', '2026-03-16', '2026-03-30', '2026-04-13', '2026-04-27', '2026-05-11', '2026-05-25', '2026-06-08'];
         const freeDays = ['2026-04-03', '2026-04-06', '2026-04-07', '2026-04-08', '2026-05-01', '2026-06-04'];
@@ -359,9 +368,15 @@
                     column.innerHTML += `<div class="empty-day" style="text-align: center; color: ${specialDay.type==='WOLNE'?'#3b82f6':'#f59e0b'}; font-size: 1.1rem; margin-top: 40px; font-weight: bold;"><i class="fas ${specialDay.type==='WOLNE'?'fa-umbrella-beach':'fa-book-reader'} fa-2x" style="margin-bottom: 15px; display:block;"></i>${specialDay.title}</div>`;
                 } else if (weekType !== 'INNY') {
                     let classes = scheduleData[weekType][i]; let classesRendered = 0;
-                    classes.sort((a, b) => a.start.localeCompare(b.start)); let prevEndMins = null;
                     
-                    classes.forEach((cls, classIndex) => {
+                    // Podpięcie oryginalnego indeksu przed sortowaniem! To naprawia błędy Globalnych Akcji
+                    let sortedClasses = classes.map((c, origIdx) => ({...c, origIdx})).sort((a, b) => a.start.localeCompare(b.start));
+                    let prevEndMins = null;
+                    
+                    sortedClasses.forEach((cls) => {
+                        let classIndex = cls.origIndex; // Prawdziwy indeks w bazie TN/TP
+                        const cardId = `${weekType}-${i}-${classIndex}`;
+
                         if (cls.specificDates && cls.specificDates.length > 0 && !cls.specificDates.includes(columnDateStr)) return; 
                         if (searchTerm && !cls.subject.toLowerCase().includes(searchTerm) && !(cls.room && cls.room.toLowerCase().includes(searchTerm)) && !(cls.lecturer && cls.lecturer.toLowerCase().includes(searchTerm))) return; 
 
@@ -378,8 +393,16 @@
                         
                         let isOngoing = (columnDateStr === todayStr && currentMins >= startMins && currentMins <= endMins);
                         let progressPercent = isOngoing ? ((currentMins - startMins) / (endMins - startMins)) * 100 : 0;
-                        let isCancelled = cls.cancelledDates && cls.cancelledDates.includes(columnDateStr);
-                        let hasExam = cls.exams && cls.exams.includes(columnDateStr);
+                        
+                        // ZMIANA PRO: Sprawdzanie globalnych zdarzeń
+                        let isCancelledLocal = cls.cancelledDates && cls.cancelledDates.includes(columnDateStr);
+                        let isCancelledGlobal = globalAdminEvents.cancelled[cardId] && globalAdminEvents.cancelled[cardId].includes(columnDateStr);
+                        let isCancelled = isCancelledLocal || isCancelledGlobal;
+
+                        let hasExamLocal = cls.exams && cls.exams.includes(columnDateStr);
+                        let hasExamGlobal = globalAdminEvents.exams[cardId] && globalAdminEvents.exams[cardId].includes(columnDateStr);
+                        let hasExam = hasExamLocal || hasExamGlobal;
+
                         let hasAttended = cls.attendedDates && cls.attendedDates.includes(columnDateStr); let hasAbsent = cls.absentDates && cls.absentDates.includes(columnDateStr);
                         let totalAttended = cls.attendedDates ? cls.attendedDates.length : 0; let totalAbsent = cls.absentDates ? cls.absentDates.length : 0;
                         let totalPast = totalAttended + totalAbsent; let freq = totalPast === 0 ? 0 : Math.round((totalAttended / totalPast) * 100);
@@ -392,17 +415,15 @@
                                 <button class="btn-icon" style="color:var(--danger); padding:2px;" onclick="deleteTodo('${weekType}', ${i}, ${classIndex}, ${tid}, event)"><i class="fas fa-times"></i></button>
                             </div>`).join('');
                         
-                        const cardId = `${weekType}-${i}-${classIndex}`;
-                        
                         const card = document.createElement('div');
                         card.className = `class-card ${isOngoing && !isCancelled ? 'ongoing' : ''} ${isCancelled ? 'cancelled' : ''}`;
                         card.onclick = () => togglePanel(`panel-${cardId}`);
                         
                         card.innerHTML = `
-                            ${isCancelled ? '<div class="cancelled-stamp">ODWOŁANE</div>' : ''}
+                            ${isCancelled ? `<div class="cancelled-stamp ${isCancelledGlobal ? 'global' : ''}">${isCancelledGlobal ? 'ODWOŁANE (ADMIN)' : 'ODWOŁANE'}</div>` : ''}
                             <div class="card-header-tags">
                                 <span class="type-badge tag-${cls.type || 'inne'}">${typeLabels[cls.type || 'inne']}</span>
-                                ${hasExam ? '<span class="kolokwium-badge"><i class="fas fa-exclamation-triangle"></i> KOLOKWIUM</span>' : ''}
+                                ${hasExam ? `<span class="${hasExamGlobal ? 'kolokwium-global-badge' : 'kolokwium-badge'}"><i class="fas ${hasExamGlobal ? 'fa-globe' : 'fa-exclamation-triangle'}"></i> ${hasExamGlobal ? 'KOLOKWIUM (OGŁOSZENIE)' : 'KOLOKWIUM'}</span>` : ''}
                                 <div class="card-actions"><button class="action-btn" onclick="editClass('${weekType}', ${i}, ${classIndex}, event)" title="Edytuj"><i class="fas fa-pencil-alt"></i></button></div>
                             </div>
                             <div class="class-time"><i class="far fa-clock"></i> ${cls.start} - ${cls.end} ${isOngoing && !isCancelled ? '<span style="color:var(--success); font-size:0.8rem; margin-left:5px;">(Trwa)</span>' : ''}</div>
@@ -419,7 +440,7 @@
                                     <button class="tab-btn active" onclick="switchTab(event, 'tab-todo-${cardId}')">Zadania</button>
                                     <button class="tab-btn" onclick="switchTab(event, 'tab-notes-${cardId}')">Notatki</button>
                                     <button class="tab-btn" onclick="switchTab(event, 'tab-att-${cardId}')">Obecność</button>
-                                    <button class="tab-btn" onclick="switchTab(event, 'tab-chat-${cardId}'); listenForMessages('${cardId}')"><i class="fab fa-google" style="color:var(--primary);"></i> Forum</button>
+                                    <button class="tab-btn" onclick="switchTab(event, 'tab-chat-${cardId}'); listenForMessages('${cardId}')"><i class="fab fa-google"></i> Forum</button>
                                 </div>
                                 <div class="panel-content active" id="tab-todo-${cardId}">
                                     <div id="todo-list-${cardId}">${todoHtml}</div>
@@ -463,7 +484,7 @@
             }
         }
 
-        // 7. UI I NOTATKI
+        // 7. UI, NOTATKI I **GLOBALNY ADMIN**
         function togglePanel(panelId) { document.getElementById(panelId).classList.toggle('active'); }
         function switchTab(event, tabId) { event.stopPropagation(); const panel = event.target.closest('.card-expanded-panel'); panel.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); panel.querySelectorAll('.panel-content').forEach(content => content.classList.remove('active')); event.target.classList.add('active'); document.getElementById(tabId).classList.add('active'); }
         function addTodo(w, d, c, e) { e.stopPropagation(); scheduleData[w][d][c].todo.push({ text: "Nowe zadanie", done: false }); saveData(); renderCalendar(); }
@@ -472,22 +493,108 @@
         function deleteTodo(w, d, c, t, e) { e.stopPropagation(); scheduleData[w][d][c].todo.splice(t, 1); saveData(); renderCalendar(); }
         function saveNote(w, d, c, e) { scheduleData[w][d][c].notes = e.target.value; saveData(); }
         function sendMail(email, sub, e) { e.stopPropagation(); if (!email) return alert("Brak maila do wykładowcy."); window.location.href = `mailto:${email}?subject=${sub}`; }
-        function toggleCancelClass(w, d, c, dateStr, e) { e.stopPropagation(); let cls = scheduleData[w][d][c]; if (cls.cancelledDates.includes(dateStr)) cls.cancelledDates = cls.cancelledDates.filter(dx => dx !== dateStr); else cls.cancelledDates.push(dateStr); saveData(); renderCalendar(); }
-        function markExam(w, d, c, dateStr, e) { e.stopPropagation(); let cls = scheduleData[w][d][c]; if (cls.exams.includes(dateStr)) cls.exams = cls.exams.filter(dx => dx !== dateStr); else cls.exams.push(dateStr); saveData(); renderCalendar(); }
+        
+        function toggleCancelClass(w, d, c, dateStr, e) { 
+            e.stopPropagation(); 
+            const user = auth.currentUser;
+            const isAdmin = user && ADMIN_EMAILS.includes(user.email);
+            const cardId = `${w}-${d}-${c}`;
+
+            if (isAdmin) {
+                if (confirm("👑 Zalogowano jako Starosta (Admin)!\n\nCzy chcesz odwołać te zajęcia GLOBALNIE dla wszystkich studentów na roku?\n\n[OK] - Zmień Globalnie\n[Anuluj] - Zmień tylko w moim telefonie")) {
+                    let currentCancelled = globalAdminEvents.cancelled[cardId] || [];
+                    if (currentCancelled.includes(dateStr)) {
+                        currentCancelled = currentCancelled.filter(x => x !== dateStr);
+                    } else {
+                        currentCancelled.push(dateStr);
+                    }
+                    db.collection("global_state").doc("events").set({
+                        cancelled: { ...globalAdminEvents.cancelled, [cardId]: currentCancelled }
+                    }, { merge: true });
+                    return; // Zmiana przejdzie przez serwer
+                }
+            }
+
+            // Tylko lokalnie
+            let cls = scheduleData[w][d][c]; 
+            if (cls.cancelledDates.includes(dateStr)) cls.cancelledDates = cls.cancelledDates.filter(dx => dx !== dateStr); 
+            else cls.cancelledDates.push(dateStr); 
+            saveData(); renderCalendar(); 
+        }
+
+        function markExam(w, d, c, dateStr, e) { 
+            e.stopPropagation(); 
+            const user = auth.currentUser;
+            const isAdmin = user && ADMIN_EMAILS.includes(user.email);
+            const cardId = `${w}-${d}-${c}`;
+
+            if (isAdmin) {
+                if (confirm("👑 Zalogowano jako Starosta (Admin)!\n\nCzy chcesz ustalić to Kolokwium GLOBALNIE dla wszystkich studentów na roku?\n\n[OK] - Ustal Globalnie\n[Anuluj] - Ustal tylko dla siebie")) {
+                    let currentExams = globalAdminEvents.exams[cardId] || [];
+                    if (currentExams.includes(dateStr)) {
+                        currentExams = currentExams.filter(x => x !== dateStr);
+                    } else {
+                        currentExams.push(dateStr);
+                    }
+                    db.collection("global_state").doc("events").set({
+                        exams: { ...globalAdminEvents.exams, [cardId]: currentExams }
+                    }, { merge: true });
+                    return; // Zmiana przejdzie przez serwer
+                }
+            }
+
+            // Tylko lokalnie
+            let cls = scheduleData[w][d][c]; 
+            if (cls.exams.includes(dateStr)) cls.exams = cls.exams.filter(dx => dx !== dateStr); 
+            else cls.exams.push(dateStr); 
+            saveData(); renderCalendar(); 
+        }
+
         function markAttendance(w, d, c, dateStr, status, e) { e.stopPropagation(); let cls = scheduleData[w][d][c]; let isPres = cls.attendedDates.includes(dateStr); let isAbs = cls.absentDates.includes(dateStr); cls.attendedDates = cls.attendedDates.filter(x => x !== dateStr); cls.absentDates = cls.absentDates.filter(x => x !== dateStr); if(status === 'present' && !isPres) cls.attendedDates.push(dateStr); if(status === 'absent' && !isAbs) cls.absentDates.push(dateStr); saveData(); renderCalendar(); }
 
-        // 8. RADAR
+        // 8. RADAR (Z UWZGLĘDNIENIEM GLOBALNYCH)
         function openRadar() {
             toggleSidebar(); const radarList = document.getElementById('radar-list'); radarList.innerHTML = '';
             const now = new Date(); now.setHours(0,0,0,0); let examsFound = [];
-            ['TN', 'TP'].forEach(week => { for(let d=0; d<5; d++) { scheduleData[week][d].forEach(cls => { if(cls.exams && cls.exams.length > 0) { cls.exams.forEach(examDateStr => { const exDate = new Date(examDateStr); if(exDate >= now) { const diffDays = Math.ceil(Math.abs(exDate - now) / (1000 * 60 * 60 * 24)); examsFound.push({ subject: cls.subject, date: examDateStr, days: diffDays }); } }); } }); } });
+            ['TN', 'TP'].forEach(week => { 
+                for(let d=0; d<5; d++) { 
+                    scheduleData[week][d].forEach((cls, classIndex) => { 
+                        let cardId = `${week}-${d}-${classIndex}`;
+                        let allExams = new Set([...(cls.exams || [])]);
+                        if (globalAdminEvents.exams[cardId]) {
+                            globalAdminEvents.exams[cardId].forEach(ex => allExams.add(ex));
+                        }
+                        
+                        allExams.forEach(examDateStr => { 
+                            const exDate = new Date(examDateStr); 
+                            if(exDate >= now) { 
+                                const diffDays = Math.ceil(Math.abs(exDate - now) / (1000 * 60 * 60 * 24)); 
+                                const isGlobal = globalAdminEvents.exams[cardId] && globalAdminEvents.exams[cardId].includes(examDateStr);
+                                examsFound.push({ subject: cls.subject, date: examDateStr, days: diffDays, isGlobal: isGlobal }); 
+                            } 
+                        }); 
+                    }); 
+                } 
+            });
             examsFound.sort((a,b) => a.days - b.days);
             if(examsFound.length === 0) radarList.innerHTML = '<div style="text-align:center; color: var(--success); padding: 20px; font-weight: bold;"><i class="fas fa-check-circle fa-2x" style="margin-bottom:10px; display:block;"></i>Czysto! Brak kolokwiów 🎉</div>';
-            else examsFound.forEach(ex => { let c = ex.days <= 3 ? 'var(--danger)' : (ex.days <= 7 ? '#f59e0b' : 'var(--primary)'); radarList.innerHTML += `<div style="background: var(--bg-color); border-left: 4px solid ${c}; padding: 12px; border-radius: 8px;"><div style="font-weight:bold; font-size: 0.95rem; margin-bottom: 5px;">${ex.subject}</div><div style="font-size: 0.85rem; color: var(--text-muted); display:flex; justify-content:space-between; align-items: center;"><span><i class="far fa-calendar-alt"></i> ${ex.date}</span><span style="color: ${c}; font-weight:900; background: rgba(0,0,0,0.05); padding: 3px 8px; border-radius: 6px;">${ex.days === 0 ? 'DZISIAJ!' : `Za ${ex.days} dni`}</span></div></div>`; });
+            else examsFound.forEach(ex => { 
+                let c = ex.days <= 3 ? 'var(--danger)' : (ex.days <= 7 ? '#f59e0b' : 'var(--primary)'); 
+                radarList.innerHTML += `
+                    <div style="background: var(--bg-color); border-left: 4px solid ${c}; padding: 12px; border-radius: 8px;">
+                        <div style="font-weight:bold; font-size: 0.95rem; margin-bottom: 5px;">
+                            ${ex.subject} ${ex.isGlobal ? '<span style="color:#8b5cf6; font-size:0.7rem; margin-left:5px;"><i class="fas fa-globe"></i> ADMIN</span>' : ''}
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); display:flex; justify-content:space-between; align-items: center;">
+                            <span><i class="far fa-calendar-alt"></i> ${ex.date}</span>
+                            <span style="color: ${c}; font-weight:900; background: rgba(0,0,0,0.05); padding: 3px 8px; border-radius: 6px;">${ex.days === 0 ? 'DZISIAJ!' : `Za ${ex.days} dni`}</span>
+                        </div>
+                    </div>`; 
+            });
             document.getElementById('radarModal').style.display = 'flex';
         }
 
-        // 9. DASHBOARD I ZEGAR
+        // 9. DASHBOARD I ZEGAR (POMIJANIE GLOBALNIE ODWOŁANYCH)
         function updateDashboard() {
             const now = new Date(); const todayStr = formatDateStr(now); const currentMins = now.getHours() * 60 + now.getMinutes(); const currentSecs = now.getSeconds();
             const weekType = getWeekTypeForDate(now); const currentDayIndex = now.getDay() - 1; const specialDay = checkSpecialDay(todayStr);
@@ -496,10 +603,16 @@
 
             let nextClass = null; let timeToNextMins = Infinity;
             if (!specialDay && weekType !== 'INNY' && currentDayIndex >= 0 && currentDayIndex <= 4) {
-                let sortedClasses = [...scheduleData[weekType][currentDayIndex]].sort((a, b) => a.start.localeCompare(b.start));
+                let sortedClasses = scheduleData[weekType][currentDayIndex].map((cls, idx) => ({...cls, origIdx: idx})).sort((a, b) => a.start.localeCompare(b.start));
+                
                 for(let cls of sortedClasses) {
                     if (cls.specificDates && cls.specificDates.length > 0 && !cls.specificDates.includes(todayStr)) continue;
-                    if (cls.cancelledDates && cls.cancelledDates.includes(todayStr)) continue;
+                    
+                    let cardId = `${weekType}-${currentDayIndex}-${cls.origIdx}`;
+                    let isCancelledLocal = cls.cancelledDates && cls.cancelledDates.includes(todayStr);
+                    let isCancelledGlobal = globalAdminEvents.cancelled[cardId] && globalAdminEvents.cancelled[cardId].includes(todayStr);
+                    if (isCancelledLocal || isCancelledGlobal) continue; // Pomiń odwołane z dashboardu
+
                     const startMin = parseInt(cls.start.split(':')[0])*60 + parseInt(cls.start.split(':')[1]);
                     if(startMin > currentMins) { nextClass = cls; timeToNextMins = startMin - currentMins; break; }
                 }
@@ -713,6 +826,10 @@
 
         // --- START APP ---
         const savedTheme = localStorage.getItem('smartPlanTheme'); if (savedTheme) setTheme(savedTheme);
+        
+        // Zmuszenie do ukrycia okna czatu przy starcie
+        document.getElementById('global-chat-window').style.display = 'none';
+
         renderCalendar(); updateDashboard();
         setInterval(updateDashboard, 1000); setInterval(renderCalendar, 60000);
     </script>
