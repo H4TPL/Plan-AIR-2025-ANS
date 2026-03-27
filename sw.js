@@ -1,4 +1,4 @@
-const cacheName = 'smart-plan-v5-2';
+const cacheName = 'smart-plan-v6-auth-fix';
 const staticAssets = [ 
     './', 
     './index.html', 
@@ -25,13 +25,18 @@ self.addEventListener('fetch', async e => {
     const req = e.request;
     const url = new URL(req.url);
 
+    // 🚨 KLUCZOWA POPRAWKA: Ignoruj zapytania POST (Firebase Auth) oraz API Google.
+    // Dzięki temu okienko logowania nie jest ucinane przez pamięć podręczną (Cache).
+    if (req.method !== 'GET' || url.hostname.includes('googleapis.com') || url.hostname.includes('securetoken')) {
+        return; // Przeglądarka obsłuży to żądanie natywnie, omijając Service Workera
+    }
+
     if (url.origin === location.origin) { 
         e.respondWith(cacheFirst(req)); 
     } else if (
         url.hostname.includes('cdnjs.cloudflare.com') ||
         url.hostname.includes('gstatic.com') ||
         url.hostname.includes('flaticon.com') ||
-        url.hostname.includes('googleapis.com') ||
         url.hostname.includes('ui-avatars.com')
     ) {
         e.respondWith(networkAndCache(req)); 
