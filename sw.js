@@ -1,4 +1,4 @@
-const cacheName = 'smart-plan-v2-final';
+const cacheName = 'smart-plan-v5-2';
 const staticAssets = [ 
     './', 
     './index.html', 
