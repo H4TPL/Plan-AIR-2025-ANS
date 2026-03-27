@@ -12,8 +12,8 @@ const firebaseConfig = {
     appId: "1:571923275689:web:ed975c8aaa0ce4392f6eb8" 
 };
 
-// Zmieniona wersja, aby wymusić aktualizację u wszystkich użytkowników!
-const APP_VERSION = "5.2.1-PRO-FIX";
+// Podbita wersja do testów logowania
+const APP_VERSION = "5.2.2-PRO-FIX";
 
 const tnWeeksStarts = ['2026-02-23', '2026-03-09', '2026-03-23', '2026-04-06', '2026-04-20', '2026-05-04', '2026-05-18', '2026-06-01'];
 const tpWeeksStarts = ['2026-03-02', '2026-03-16', '2026-03-30', '2026-04-13', '2026-04-27', '2026-05-11', '2026-05-25', '2026-06-08'];
@@ -87,7 +87,19 @@ function applyTranslations() {
     });
 }
 
-firebase.initializeApp(firebaseConfig); const db = firebase.firestore(); const auth = firebase.auth();
+firebase.initializeApp(firebaseConfig); 
+const db = firebase.firestore(); 
+const auth = firebase.auth();
+
+// --- KOD TESTOWY: WYŁAPYWANIE BŁĘDÓW PO POWROCIE Z GOOGLE ---
+auth.getRedirectResult().then(result => {
+    if (result && result.user) {
+        console.log("Sukces! Zalogowano jako: ", result.user.email);
+    }
+}).catch(error => {
+    alert("UKRYTY BŁĄD LOGOWANIA:\nKod: " + error.code + "\nWiadomość: " + error.message);
+});
+// -------------------------------------------------------------
 
 let globalAdminEvents = { cancelled: {}, exams: {} };
 db.collection("global_state").doc("events").onSnapshot(doc => {
@@ -701,7 +713,6 @@ function switchDirectoryTab(tab) {
     });
 }
 
-// 🚨🚨🚨 POPRAWIONA FUNKCJA LOGOWANIA (REDIRECT ZAMIAST POPUP) 🚨🚨🚨
 function loginForSync() { 
     const provider = new firebase.auth.GoogleAuthProvider(); 
     auth.signInWithRedirect(provider); 
