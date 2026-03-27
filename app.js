@@ -713,9 +713,38 @@ function switchDirectoryTab(tab) {
     });
 }
 
-function loginForSync() { 
-    const provider = new firebase.auth.GoogleAuthProvider(); 
-    auth.signInWithRedirect(provider); 
+function loginForSync() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+        .then(() => {
+            return auth.signInWithPopup(provider);
+        })
+        .then((result) => {
+            if (result.user) {
+                console.log("Zalogowano:", result.user.email);
+            }
+        })
+        .catch((error) => {
+            console.error("Błąd logowania:", error);
+
+            // fallback jeśli popup zablokowany
+            if (
+                error.code === 'auth/popup-blocked' ||
+                error.code === 'auth/popup-closed-by-user' ||
+                error.code === 'auth/cancelled-popup-request'
+            ) {
+                console.log("Popup zablokowany → fallback do redirect");
+                auth.signInWithRedirect(provider);
+                return;
+            }
+
+            alert(
+                "Błąd logowania:\n" +
+                error.code + "\n" +
+                error.message
+            );
+        });
 }
 
 function toggleEmojiPicker(inputId) {
