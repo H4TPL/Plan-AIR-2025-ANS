@@ -702,7 +702,7 @@ function switchDirectoryTab(tab) {
 
 function loginForSync() { 
     const provider = new firebase.auth.GoogleAuthProvider(); 
-    auth.signInWithPopup(provider).then(res => { alert(`Zalogowano!`); renderCalendar(); }).catch(e => alert("Błąd: " + e.message)); 
+    auth.signInWithRedirect(provider); 
 }
 
 function toggleEmojiPicker(inputId) {
