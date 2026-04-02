@@ -1,6 +1,5 @@
 // ==========================================
 // 📅 KALENDARZ / KARTY ZAJĘĆ / EDYCJA PLANU
-// bez surowego innerHTML dla danych użytkownika
 // ==========================================
 
 let viewDateStart = getSmartStartMonday();
@@ -20,12 +19,12 @@ function ensureClassArrays(cls) {
     if (!Array.isArray(cls.exams)) cls.exams = [];
     if (!Array.isArray(cls.attendedDates)) cls.attendedDates = [];
     if (!Array.isArray(cls.absentDates)) cls.absentDates = [];
+    if (typeof cls.notes !== 'string') cls.notes = '';
 }
 
 function parseTimeToMinutes(timeStr) {
     const safe = safeText(timeStr).trim();
     const [h, m] = safe.split(':').map(Number);
-
     if (!Number.isFinite(h) || !Number.isFinite(m)) return 0;
     return h * 60 + m;
 }
@@ -43,14 +42,9 @@ function createEmptyState(imgSrc, altText, message) {
         className: 'empty-gif-container',
         children: [
             createElement('img', {
-                attrs: {
-                    src: imgSrc,
-                    alt: altText
-                }
+                attrs: { src: imgSrc, alt: altText }
             }),
-            createElement('p', {
-                text: message
-            })
+            createElement('p', { text: message })
         ]
     });
 }
@@ -64,19 +58,15 @@ function createDayTitle(daysNames, index, columnDateObj, todayStr, weekTypeLabel
 
     const title = createElement('div', {
         className: 'day-title',
-        cssText: columnDateStr === todayStr
-            ? 'background: rgba(79, 70, 229, 0.1); border-radius: 8px;'
-            : ''
+        cssText: columnDateStr === todayStr ? 'background: rgba(79, 70, 229, 0.1); border-radius: 8px;' : ''
     });
 
     title.appendChild(document.createTextNode(daysNames[index]));
     title.appendChild(document.createElement('br'));
-
     title.appendChild(createElement('span', {
         className: 'date-subtitle',
         text: `${columnDateObj.getDate()}.${columnDateObj.getMonth() + 1}.${columnDateObj.getFullYear()}`
     }));
-
     title.appendChild(createElement('span', {
         className: 'week-type-indicator',
         cssText: `color: ${colorMarker}; border: 1px solid ${colorMarker};`,
@@ -89,16 +79,11 @@ function createDayTitle(daysNames, index, columnDateObj, todayStr, weekTypeLabel
 function createGapCard(gapMins) {
     const h = Math.floor(gapMins / 60);
     const m = gapMins % 60;
-
     const text = h > 0 ? `${h}h ${m}m` : `${m}m`;
 
-    const div = createElement('div', {
-        className: 'okienko-card'
-    });
-
+    const div = createElement('div', { className: 'okienko-card' });
     div.appendChild(createIcon('fas fa-coffee'));
     div.appendChild(document.createTextNode(` ${t('window')}: ${text}`));
-
     return div;
 }
 
@@ -114,27 +99,18 @@ function createCardHeaderTags(cls, typeLabels, hasExam, hasExamGlobal, weekType,
         const examBadge = createElement('span', {
             className: hasExamGlobal ? 'kolokwium-global-badge' : 'kolokwium-badge'
         });
-
         examBadge.appendChild(createIcon(`fas ${hasExamGlobal ? 'fa-globe' : 'fa-exclamation-triangle'}`));
         examBadge.appendChild(document.createTextNode(` ${hasExamGlobal ? t('badgeExamAdmin') : t('badgeExam')}`));
-
         wrap.appendChild(examBadge);
     }
 
     const actions = createElement('div', { className: 'card-actions' });
-
     const editBtn = createElement('button', {
         type: 'button',
         className: 'btn-icon js-edit-class-btn',
         cssText: 'border:1px solid var(--toggle-bg) !important;',
-        dataset: {
-            week: weekType,
-            day: dayIndex,
-            classIndex
-        },
-        attrs: {
-            title: 'Edytuj'
-        },
+        dataset: { week: weekType, day: dayIndex, classIndex },
+        attrs: { title: 'Edytuj' },
         events: {
             click: (e) => {
                 e.preventDefault();
@@ -143,7 +119,6 @@ function createCardHeaderTags(cls, typeLabels, hasExam, hasExamGlobal, weekType,
             }
         }
     });
-
     editBtn.appendChild(createIcon('fas fa-pencil-alt'));
     actions.appendChild(editBtn);
     wrap.appendChild(actions);
@@ -153,7 +128,6 @@ function createCardHeaderTags(cls, typeLabels, hasExam, hasExamGlobal, weekType,
 
 function createClassTimeRow(cls, isOngoing, isCancelled) {
     const row = createElement('div', { className: 'class-time' });
-
     row.appendChild(createIcon('far fa-clock'));
     row.appendChild(document.createTextNode(` ${safeText(cls.start)} - ${safeText(cls.end)}`));
 
@@ -193,10 +167,8 @@ function createSpecificDatesLabel(cls) {
     const badge = createElement('span', {
         cssText: 'font-size:0.75rem; color:var(--primary); font-weight:bold; margin-top:3px;'
     });
-
     badge.appendChild(createIcon('fas fa-calendar-check'));
     badge.appendChild(document.createTextNode(` ${t('specificDates')}`));
-
     return badge;
 }
 
@@ -206,7 +178,6 @@ function createProgressContainer(progressPercent) {
         className: 'progress-bar',
         cssText: `width: ${progressPercent}%;`
     });
-
     container.appendChild(bar);
     return container;
 }
@@ -219,24 +190,14 @@ function createCardTodoItem(weekType, dayIndex, classIndex, todoIndex, todoItem)
     const checkbox = createElement('input', {
         type: 'checkbox',
         className: 'js-card-todo-toggle',
-        dataset: {
-            week: weekType,
-            day: dayIndex,
-            classIndex,
-            todoIndex
-        }
+        dataset: { week: weekType, day: dayIndex, classIndex, todoIndex }
     });
     checkbox.checked = !!todoItem.done;
 
     const textDiv = createElement('div', {
         className: 'todo-input js-card-todo-text',
         contentEditable: true,
-        dataset: {
-            week: weekType,
-            day: dayIndex,
-            classIndex,
-            todoIndex
-        }
+        dataset: { week: weekType, day: dayIndex, classIndex, todoIndex }
     });
     textDiv.textContent = safeText(todoItem.text, '...');
 
@@ -244,19 +205,13 @@ function createCardTodoItem(weekType, dayIndex, classIndex, todoIndex, todoItem)
         type: 'button',
         className: 'btn-icon js-card-todo-delete',
         cssText: 'color:var(--danger);',
-        dataset: {
-            week: weekType,
-            day: dayIndex,
-            classIndex,
-            todoIndex
-        }
+        dataset: { week: weekType, day: dayIndex, classIndex, todoIndex }
     });
     deleteBtn.appendChild(createIcon('fas fa-times'));
 
     wrapper.appendChild(checkbox);
     wrapper.appendChild(textDiv);
     wrapper.appendChild(deleteBtn);
-
     return wrapper;
 }
 
@@ -266,30 +221,20 @@ function createTodoPanel(cardId, weekType, dayIndex, classIndex, cls) {
         id: `tab-todo-${cardId}`
     });
 
-    const todoList = createElement('div', {
-        attrs: { id: `todo-list-${cardId}` }
-    });
-
+    const todoList = createElement('div', { attrs: { id: `todo-list-${cardId}` } });
     (cls.todo || []).forEach((todoItem, todoIndex) => {
-        todoList.appendChild(
-            createCardTodoItem(weekType, dayIndex, classIndex, todoIndex, todoItem)
-        );
+        todoList.appendChild(createCardTodoItem(weekType, dayIndex, classIndex, todoIndex, todoItem));
     });
 
     const addBtn = createElement('button', {
         type: 'button',
         className: 'add-todo-btn js-card-add-todo',
-        dataset: {
-            week: weekType,
-            day: dayIndex,
-            classIndex
-        },
+        dataset: { week: weekType, day: dayIndex, classIndex },
         text: `+ ${t('add')} zadanie`
     });
 
     panel.appendChild(todoList);
     panel.appendChild(addBtn);
-
     return panel;
 }
 
@@ -302,15 +247,9 @@ function createNotesPanel(cardId, weekType, dayIndex, classIndex, cls) {
     const textarea = createElement('textarea', {
         className: 'notes-textarea js-card-note',
         placeholder: '...',
-        dataset: {
-            week: weekType,
-            day: dayIndex,
-            classIndex
-        }
+        dataset: { week: weekType, day: dayIndex, classIndex }
     });
-
     textarea.value = safeText(cls.notes);
-
     panel.appendChild(textarea);
     return panel;
 }
@@ -340,13 +279,7 @@ function createAttendancePanel(cardId, weekType, dayIndex, classIndex, columnDat
         cssText: hasAttended
             ? 'background: var(--success); color: white; border-color: var(--success);'
             : 'border-color: var(--success); color: var(--success);',
-        dataset: {
-            week: weekType,
-            day: dayIndex,
-            classIndex,
-            date: columnDateStr,
-            status: 'present'
-        }
+        dataset: { week: weekType, day: dayIndex, classIndex, date: columnDateStr, status: 'present' }
     });
     presentBtn.appendChild(createIcon('fas fa-check'));
     presentBtn.appendChild(document.createTextNode(` ${t('attBtnPres')}`));
@@ -357,13 +290,7 @@ function createAttendancePanel(cardId, weekType, dayIndex, classIndex, columnDat
         cssText: hasAbsent
             ? 'background: var(--danger); color: white; border-color: var(--danger);'
             : 'border-color: var(--danger); color: var(--danger);',
-        dataset: {
-            week: weekType,
-            day: dayIndex,
-            classIndex,
-            date: columnDateStr,
-            status: 'absent'
-        }
+        dataset: { week: weekType, day: dayIndex, classIndex, date: columnDateStr, status: 'absent' }
     });
     absentBtn.appendChild(createIcon('fas fa-times'));
     absentBtn.appendChild(document.createTextNode(` ${t('attBtnAbs')}`));
@@ -374,26 +301,21 @@ function createAttendancePanel(cardId, weekType, dayIndex, classIndex, columnDat
     const summary = createElement('div', {
         cssText: 'border-top: 1px dashed var(--toggle-bg); padding-top: 10px; font-size: 0.85rem; color: var(--text-muted);'
     });
-
     const strong = createElement('strong');
     strong.appendChild(document.createTextNode(`${t('attGeneral')}: `));
-
     strong.appendChild(createElement('span', {
         cssText: `color: ${freq >= 50 ? 'var(--success)' : 'var(--danger)'}; font-size: 1.1rem; font-weight: 900;`,
         text: `${freq}%`
     }));
-
     const secondLine = createElement('div', {
         cssText: 'margin-top: 5px;',
         text: `${t('attPres')}: ${totalAttended} | ${t('attAbs')}: ${totalAbsent}`
-    }));
-
+    });
     summary.appendChild(strong);
     summary.appendChild(secondLine);
 
     box.appendChild(buttonsRow);
     box.appendChild(summary);
-
     panel.appendChild(box);
     return panel;
 }
@@ -417,9 +339,7 @@ function createChatPanel(cardId) {
     const emojiBtn = createElement('button', {
         type: 'button',
         className: 'btn-icon js-card-chat-emoji',
-        dataset: {
-            inputId: `chat-in-${cardId}`
-        }
+        dataset: { inputId: `chat-in-${cardId}` }
     });
     emojiBtn.appendChild(createElement('i', {
         className: 'far fa-smile',
@@ -431,18 +351,14 @@ function createChatPanel(cardId) {
         id: `chat-in-${cardId}`,
         className: 'js-card-chat-input',
         placeholder: '...',
-        dataset: {
-            cardId
-        },
+        dataset: { cardId },
         cssText: 'flex:1; min-width:0; padding:8px; border-radius:6px; border:1px solid var(--toggle-bg); font-size:0.8rem;'
     });
 
     const sendBtn = createElement('button', {
         type: 'button',
         className: 'btn-icon js-card-chat-send',
-        dataset: {
-            cardId
-        },
+        dataset: { cardId },
         cssText: 'background:var(--primary) !important; color:white; width:36px; height:36px;'
     });
     sendBtn.appendChild(createIcon('fas fa-paper-plane'));
@@ -453,7 +369,6 @@ function createChatPanel(cardId) {
 
     panel.appendChild(chatBox);
     panel.appendChild(controls);
-
     return panel;
 }
 
@@ -463,10 +378,7 @@ function createExpandedActions(cls, weekType, dayIndex, classIndex, columnDateSt
     const mailBtn = createElement('button', {
         type: 'button',
         className: 'btn-mail js-send-mail',
-        dataset: {
-            email: safeText(cls.email),
-            subject: encodeURIComponent(safeText(cls.subject))
-        }
+        dataset: { email: safeText(cls.email), subject: encodeURIComponent(safeText(cls.subject)) }
     });
     mailBtn.appendChild(createIcon('fas fa-envelope'));
     mailBtn.appendChild(document.createTextNode(` ${t('btnMail')}`));
@@ -475,12 +387,7 @@ function createExpandedActions(cls, weekType, dayIndex, classIndex, columnDateSt
         type: 'button',
         className: 'btn-attendance js-mark-exam',
         cssText: hasExam ? 'background: rgba(239, 68, 68, 0.1); color: var(--danger);' : '',
-        dataset: {
-            week: weekType,
-            day: dayIndex,
-            classIndex,
-            date: columnDateStr
-        }
+        dataset: { week: weekType, day: dayIndex, classIndex, date: columnDateStr }
     });
     examBtn.appendChild(createIcon(`fas ${hasExam ? 'fa-times' : 'fa-bullseye'}`));
     examBtn.appendChild(document.createTextNode(` ${hasExam ? t('btnExamDel') : t('btnExamSet')}`));
@@ -488,12 +395,7 @@ function createExpandedActions(cls, weekType, dayIndex, classIndex, columnDateSt
     const cancelBtn = createElement('button', {
         type: 'button',
         className: 'btn-cancel-class js-toggle-cancel-class',
-        dataset: {
-            week: weekType,
-            day: dayIndex,
-            classIndex,
-            date: columnDateStr
-        }
+        dataset: { week: weekType, day: dayIndex, classIndex, date: columnDateStr }
     });
     cancelBtn.appendChild(createIcon(`fas ${isCancelled ? 'fa-undo' : 'fa-ban'}`));
     cancelBtn.appendChild(document.createTextNode(` ${isCancelled ? t('btnRestore') : t('btnCancel')}`));
@@ -501,7 +403,6 @@ function createExpandedActions(cls, weekType, dayIndex, classIndex, columnDateSt
     actions.appendChild(mailBtn);
     actions.appendChild(examBtn);
     actions.appendChild(cancelBtn);
-
     return actions;
 }
 
@@ -511,37 +412,28 @@ function createPanelTabs(cardId) {
     const todoTab = createElement('button', {
         type: 'button',
         className: 'tab-btn active js-panel-tab',
-        dataset: {
-            tabId: `tab-todo-${cardId}`
-        },
+        dataset: { tabId: `tab-todo-${cardId}` },
         text: t('tabTasks')
     });
 
     const notesTab = createElement('button', {
         type: 'button',
         className: 'tab-btn js-panel-tab',
-        dataset: {
-            tabId: `tab-notes-${cardId}`
-        },
+        dataset: { tabId: `tab-notes-${cardId}` },
         text: t('tabNotes')
     });
 
     const attTab = createElement('button', {
         type: 'button',
         className: 'tab-btn js-panel-tab',
-        dataset: {
-            tabId: `tab-att-${cardId}`
-        },
+        dataset: { tabId: `tab-att-${cardId}` },
         text: t('tabAtt')
     });
 
     const chatTab = createElement('button', {
         type: 'button',
         className: 'tab-btn js-panel-tab js-chat-tab',
-        dataset: {
-            tabId: `tab-chat-${cardId}`,
-            cardId
-        }
+        dataset: { tabId: `tab-chat-${cardId}`, cardId }
     });
     chatTab.appendChild(createIcon('fab fa-google'));
     chatTab.appendChild(document.createTextNode(` ${t('tabForum')}`));
@@ -550,37 +442,20 @@ function createPanelTabs(cardId) {
     tabs.appendChild(notesTab);
     tabs.appendChild(attTab);
     tabs.appendChild(chatTab);
-
     return tabs;
 }
 
 function createClassCard(cls, context) {
     const {
-        cardId,
-        weekType,
-        dayIndex,
-        classIndex,
-        columnDateStr,
-        isOngoing,
-        progressPercent,
-        isCancelled,
-        isCancelledGlobal,
-        hasExam,
-        hasExamGlobal,
-        hasAttended,
-        hasAbsent,
-        freq,
-        totalAttended,
-        totalAbsent,
-        typeLabels,
-        renderIndex
+        cardId, weekType, dayIndex, classIndex, columnDateStr,
+        isOngoing, progressPercent, isCancelled, isCancelledGlobal,
+        hasExam, hasExamGlobal, hasAttended, hasAbsent,
+        freq, totalAttended, totalAbsent, typeLabels, renderIndex
     } = context;
 
     const card = createElement('div', {
         className: `class-card ${isOngoing && !isCancelled ? 'ongoing' : ''} ${isCancelled ? 'cancelled' : ''}`.trim(),
-        dataset: {
-            panelId: `panel-${cardId}`
-        },
+        dataset: { panelId: `panel-${cardId}` },
         cssText: `animation-delay: ${renderIndex * 0.05}s;`,
         events: {
             click: (e) => {
@@ -594,7 +469,6 @@ function createClassCard(cls, context) {
                 ) {
                     return;
                 }
-
                 togglePanel(`panel-${cardId}`);
             }
         }
@@ -609,18 +483,11 @@ function createClassCard(cls, context) {
 
     card.appendChild(createCardHeaderTags(cls, typeLabels, hasExam, hasExamGlobal, weekType, dayIndex, classIndex));
     card.appendChild(createClassTimeRow(cls, isOngoing, isCancelled));
-
-    card.appendChild(createElement('div', {
-        className: 'class-subject',
-        text: t_sub(cls.subject)
-    }));
-
+    card.appendChild(createElement('div', { className: 'class-subject', text: t_sub(cls.subject) }));
     card.appendChild(createClassDetails(cls));
 
     const specificDatesLabel = createSpecificDatesLabel(cls);
-    if (specificDatesLabel) {
-        card.appendChild(specificDatesLabel);
-    }
+    if (specificDatesLabel) card.appendChild(specificDatesLabel);
 
     card.appendChild(createProgressContainer(progressPercent));
 
@@ -628,7 +495,6 @@ function createClassCard(cls, context) {
         className: 'card-expanded-panel',
         id: `panel-${cardId}`
     });
-
     panel.appendChild(createPanelTabs(cardId));
     panel.appendChild(createTodoPanel(cardId, weekType, dayIndex, classIndex, cls));
     panel.appendChild(createNotesPanel(cardId, weekType, dayIndex, classIndex, cls));
@@ -637,9 +503,9 @@ function createClassCard(cls, context) {
     panel.appendChild(createExpandedActions(cls, weekType, dayIndex, classIndex, columnDateStr, hasExam, isCancelled));
 
     card.appendChild(panel);
-
     return card;
 }
+
 function renderCalendar() {
     const calendar = document.getElementById('calendar');
     if (!calendar) return;
@@ -668,15 +534,11 @@ function renderCalendar() {
 
     const weekLabel = document.getElementById('week-label');
     if (weekLabel) {
-        setSafeText(
-            weekLabel,
-            `${viewDateStart.getDate()}.${viewDateStart.getMonth() + 1} - ${friday.getDate()}.${friday.getMonth() + 1}.${friday.getFullYear()}`
-        );
+        setSafeText(weekLabel, `${viewDateStart.getDate()}.${viewDateStart.getMonth() + 1} - ${friday.getDate()}.${friday.getMonth() + 1}.${friday.getFullYear()}`);
     }
 
     for (let i = 0; i < 5; i++) {
         const column = createElement('div', { className: 'day-column' });
-
         const columnDateObj = new Date(viewDateStart);
         columnDateObj.setDate(viewDateStart.getDate() + i);
 
@@ -687,33 +549,26 @@ function renderCalendar() {
         const weekTypeLabel = specialDay
             ? specialDay.type
             : (weekType === 'INNY' ? t('noClass') : (weekType === 'TN' ? t('tn') : t('tp')));
-
         const colorMarker = getWeekTypeColorMarker(weekType, specialDay);
 
-        column.appendChild(
-            createDayTitle(daysNames, i, columnDateObj, todayStr, weekTypeLabel, colorMarker)
-        );
+        column.appendChild(createDayTitle(daysNames, i, columnDateObj, todayStr, weekTypeLabel, colorMarker));
 
         if (specialDay) {
-            column.appendChild(
-                createEmptyState(
-                    'https://media.giphy.com/media/l41lFw057lAJQMwg0/giphy.gif',
-                    'Wolne',
-                    safeText(specialDay.title)
-                )
-            );
+            column.appendChild(createEmptyState(
+                'https://media.giphy.com/media/l41lFw057lAJQMwg0/giphy.gif',
+                'Wolne',
+                safeText(specialDay.title)
+            ));
             calendar.appendChild(column);
             continue;
         }
 
         if (weekType === 'INNY') {
-            column.appendChild(
-                createEmptyState(
-                    'https://media.giphy.com/media/dzaUX7CAG0Ihi/giphy.gif',
-                    'Party',
-                    t('emptyDay')
-                )
-            );
+            column.appendChild(createEmptyState(
+                'https://media.giphy.com/media/dzaUX7CAG0Ihi/giphy.gif',
+                'Party',
+                t('emptyDay')
+            ));
             calendar.appendChild(column);
             continue;
         }
@@ -733,12 +588,9 @@ function renderCalendar() {
             if (!cls) return;
 
             ensureClassArrays(cls);
-
             const cardId = `${weekType}-${i}-${classIndex}`;
 
-            if (cls.specificDates.length > 0 && !cls.specificDates.includes(columnDateStr)) {
-                return;
-            }
+            if (cls.specificDates.length > 0 && !cls.specificDates.includes(columnDateStr)) return;
 
             const subjectLower = safeText(cls.subject).toLowerCase();
             const roomLower = safeText(cls.room).toLowerCase();
@@ -759,21 +611,14 @@ function renderCalendar() {
             if (prevEndMins !== null && (startMins - prevEndMins) >= 45 && !searchTerm) {
                 column.appendChild(createGapCard(startMins - prevEndMins));
             }
-
             prevEndMins = endMins;
             classesRendered++;
 
             const isOngoing = columnDateStr === todayStr && currentMins >= startMins && currentMins <= endMins;
-            const progressPercent = isOngoing && endMins > startMins
-                ? ((currentMins - startMins) / (endMins - startMins)) * 100
-                : 0;
+            const progressPercent = isOngoing && endMins > startMins ? ((currentMins - startMins) / (endMins - startMins)) * 100 : 0;
 
-            const globalCancelledDates = Array.isArray(globalAdminEvents?.cancelled?.[cardId])
-                ? globalAdminEvents.cancelled[cardId]
-                : [];
-            const globalExamDates = Array.isArray(globalAdminEvents?.exams?.[cardId])
-                ? globalAdminEvents.exams[cardId]
-                : [];
+            const globalCancelledDates = Array.isArray(globalAdminEvents?.cancelled?.[cardId]) ? globalAdminEvents.cancelled[cardId] : [];
+            const globalExamDates = Array.isArray(globalAdminEvents?.exams?.[cardId]) ? globalAdminEvents.exams[cardId] : [];
 
             const isCancelledLocal = cls.cancelledDates.includes(columnDateStr);
             const isCancelledGlobal = globalCancelledDates.includes(columnDateStr);
@@ -791,38 +636,34 @@ function renderCalendar() {
             const totalPast = totalAttended + totalAbsent;
             const freq = totalPast === 0 ? 0 : Math.round((totalAttended / totalPast) * 100);
 
-            column.appendChild(
-                createClassCard(cls, {
-                    cardId,
-                    weekType,
-                    dayIndex: i,
-                    classIndex,
-                    columnDateStr,
-                    isOngoing,
-                    progressPercent,
-                    isCancelled,
-                    isCancelledGlobal,
-                    hasExam,
-                    hasExamGlobal,
-                    hasAttended,
-                    hasAbsent,
-                    freq,
-                    totalAttended,
-                    totalAbsent,
-                    typeLabels,
-                    renderIndex
-                })
-            );
+            column.appendChild(createClassCard(cls, {
+                cardId,
+                weekType,
+                dayIndex: i,
+                classIndex,
+                columnDateStr,
+                isOngoing,
+                progressPercent,
+                isCancelled,
+                isCancelledGlobal,
+                hasExam,
+                hasExamGlobal,
+                hasAttended,
+                hasAbsent,
+                freq,
+                totalAttended,
+                totalAbsent,
+                typeLabels,
+                renderIndex
+            }));
         });
 
         if (classesRendered === 0) {
-            column.appendChild(
-                createEmptyState(
-                    'https://media.giphy.com/media/dzaUX7CAG0Ihi/giphy.gif',
-                    'Party',
-                    t('emptyDay')
-                )
-            );
+            column.appendChild(createEmptyState(
+                'https://media.giphy.com/media/dzaUX7CAG0Ihi/giphy.gif',
+                'Party',
+                t('emptyDay')
+            ));
         }
 
         calendar.appendChild(column);
@@ -831,9 +672,7 @@ function renderCalendar() {
 
 function togglePanel(panelId) {
     const panel = document.getElementById(panelId);
-    if (panel) {
-        panel.classList.toggle('active');
-    }
+    if (panel) panel.classList.toggle('active');
 }
 
 function switchTab(buttonEl, tabId) {
@@ -844,11 +683,8 @@ function switchTab(buttonEl, tabId) {
     panel.querySelectorAll('.panel-content').forEach(content => content.classList.remove('active'));
 
     buttonEl.classList.add('active');
-
     const tab = document.getElementById(tabId);
-    if (tab) {
-        tab.classList.add('active');
-    }
+    if (tab) tab.classList.add('active');
 }
 
 function addTodo(w, d, c) {
@@ -914,7 +750,6 @@ function sendMail(email, sub) {
         alert('Brak maila.');
         return;
     }
-
     window.location.href = `mailto:${safeEmail}?subject=${encodeURIComponent(safeText(sub))}`;
 }
 
@@ -957,7 +792,6 @@ async function toggleCancelClass(w, d, c, dateStr) {
                     requester: safeText(user.displayName || 'Student'),
                     uid: user.uid
                 });
-
                 alert('Wysłano prośbę do Admina! Czeka na zatwierdzenie.');
             } catch (error) {
                 console.error('Błąd wysyłania prośby do admina:', error);
@@ -1015,7 +849,6 @@ async function markExam(w, d, c, dateStr) {
                     requester: safeText(user.displayName || 'Student'),
                     uid: user.uid
                 });
-
                 alert('Wysłano prośbę do Admina! Czeka na zatwierdzenie.');
             } catch (error) {
                 console.error('Błąd wysyłania prośby o kolokwium:', error);
@@ -1061,10 +894,7 @@ function saveClass() {
 
     let parsedDates = [];
     if (datesInput.trim() !== '') {
-        parsedDates = datesInput
-            .split(',')
-            .map(dx => dx.trim())
-            .filter(Boolean);
+        parsedDates = datesInput.split(',').map(dx => dx.trim()).filter(Boolean);
     }
 
     const startEl = document.getElementById('timeStart');
@@ -1111,6 +941,7 @@ function saveClass() {
     renderCalendar();
     updateDashboard();
 }
+
 function deleteClass() {
     const weekTypeSelect = document.getElementById('weekTypeSelect');
     const editClassIndexEl = document.getElementById('editClassIndex');
@@ -1132,14 +963,10 @@ function deleteClass() {
     }
 
     scheduleData[w][d].splice(cIdx, 1);
-
     saveData();
     closeModal();
     renderCalendar();
-
-    if (typeof updateDashboard === 'function') {
-        updateDashboard(true);
-    }
+    if (typeof updateDashboard === 'function') updateDashboard(true);
 }
 
 function editClass(week, dayIndex, classIndex) {
@@ -1176,12 +1003,10 @@ function editClass(week, dayIndex, classIndex) {
     if (classType) classType.value = safeText(cls.type || 'inne');
     if (specificDates) specificDates.value = Array.isArray(cls.specificDates) ? cls.specificDates.join(', ') : '';
 
-    if (deleteClassBtn) {
-        deleteClassBtn.style.display = 'inline-flex';
-    }
-
+    if (deleteClassBtn) deleteClassBtn.style.display = 'inline-flex';
     if (classModal) classModal.style.display = 'flex';
 }
+
 function initCalendarDelegation() {
     if (window.__calendarDelegationInitialized) return;
     window.__calendarDelegationInitialized = true;
@@ -1191,11 +1016,7 @@ function initCalendarDelegation() {
         if (editBtn) {
             e.preventDefault();
             e.stopPropagation();
-            editClass(
-                editBtn.dataset.week,
-                Number(editBtn.dataset.day),
-                Number(editBtn.dataset.classIndex)
-            );
+            editClass(editBtn.dataset.week, Number(editBtn.dataset.day), Number(editBtn.dataset.classIndex));
             return;
         }
 
@@ -1203,12 +1024,8 @@ function initCalendarDelegation() {
         if (tabBtn) {
             e.preventDefault();
             e.stopPropagation();
-
             switchTab(tabBtn, tabBtn.dataset.tabId);
-
-            if (tabBtn.classList.contains('js-chat-tab')) {
-                listenForMessages(tabBtn.dataset.cardId);
-            }
+            if (tabBtn.classList.contains('js-chat-tab')) listenForMessages(tabBtn.dataset.cardId);
             return;
         }
 
@@ -1216,11 +1033,7 @@ function initCalendarDelegation() {
         if (addTodoBtn) {
             e.preventDefault();
             e.stopPropagation();
-            addTodo(
-                addTodoBtn.dataset.week,
-                Number(addTodoBtn.dataset.day),
-                Number(addTodoBtn.dataset.classIndex)
-            );
+            addTodo(addTodoBtn.dataset.week, Number(addTodoBtn.dataset.day), Number(addTodoBtn.dataset.classIndex));
             return;
         }
 
@@ -1228,12 +1041,7 @@ function initCalendarDelegation() {
         if (deleteTodoBtn) {
             e.preventDefault();
             e.stopPropagation();
-            deleteTodo(
-                deleteTodoBtn.dataset.week,
-                Number(deleteTodoBtn.dataset.day),
-                Number(deleteTodoBtn.dataset.classIndex),
-                Number(deleteTodoBtn.dataset.todoIndex)
-            );
+            deleteTodo(deleteTodoBtn.dataset.week, Number(deleteTodoBtn.dataset.day), Number(deleteTodoBtn.dataset.classIndex), Number(deleteTodoBtn.dataset.todoIndex));
             return;
         }
 
@@ -1241,10 +1049,7 @@ function initCalendarDelegation() {
         if (sendMailBtn) {
             e.preventDefault();
             e.stopPropagation();
-            sendMail(
-                sendMailBtn.dataset.email,
-                decodeURIComponent(sendMailBtn.dataset.subject || '')
-            );
+            sendMail(sendMailBtn.dataset.email, decodeURIComponent(sendMailBtn.dataset.subject || ''));
             return;
         }
 
@@ -1252,12 +1057,7 @@ function initCalendarDelegation() {
         if (examBtn) {
             e.preventDefault();
             e.stopPropagation();
-            markExam(
-                examBtn.dataset.week,
-                Number(examBtn.dataset.day),
-                Number(examBtn.dataset.classIndex),
-                examBtn.dataset.date
-            );
+            markExam(examBtn.dataset.week, Number(examBtn.dataset.day), Number(examBtn.dataset.classIndex), examBtn.dataset.date);
             return;
         }
 
@@ -1265,12 +1065,7 @@ function initCalendarDelegation() {
         if (cancelBtn) {
             e.preventDefault();
             e.stopPropagation();
-            toggleCancelClass(
-                cancelBtn.dataset.week,
-                Number(cancelBtn.dataset.day),
-                Number(cancelBtn.dataset.classIndex),
-                cancelBtn.dataset.date
-            );
+            toggleCancelClass(cancelBtn.dataset.week, Number(cancelBtn.dataset.day), Number(cancelBtn.dataset.classIndex), cancelBtn.dataset.date);
             return;
         }
 
@@ -1304,9 +1099,7 @@ function initCalendarDelegation() {
             }
 
             const panelId = card.dataset.panelId;
-            if (panelId) {
-                togglePanel(panelId);
-            }
+            if (panelId) togglePanel(panelId);
             return;
         }
     });
@@ -1314,24 +1107,13 @@ function initCalendarDelegation() {
     document.addEventListener('change', e => {
         const todoCheckbox = e.target.closest('.js-card-todo-toggle');
         if (todoCheckbox) {
-            toggleTodo(
-                todoCheckbox.dataset.week,
-                Number(todoCheckbox.dataset.day),
-                Number(todoCheckbox.dataset.classIndex),
-                Number(todoCheckbox.dataset.todoIndex),
-                todoCheckbox.checked
-            );
+            toggleTodo(todoCheckbox.dataset.week, Number(todoCheckbox.dataset.day), Number(todoCheckbox.dataset.classIndex), Number(todoCheckbox.dataset.todoIndex), todoCheckbox.checked);
             return;
         }
 
         const noteArea = e.target.closest('.js-card-note');
         if (noteArea) {
-            saveNote(
-                noteArea.dataset.week,
-                Number(noteArea.dataset.day),
-                Number(noteArea.dataset.classIndex),
-                noteArea.value
-            );
+            saveNote(noteArea.dataset.week, Number(noteArea.dataset.day), Number(noteArea.dataset.classIndex), noteArea.value);
             return;
         }
     });
@@ -1339,13 +1121,7 @@ function initCalendarDelegation() {
     document.addEventListener('focusout', e => {
         const todoText = e.target.closest('.js-card-todo-text');
         if (todoText) {
-            updateTodoText(
-                todoText.dataset.week,
-                Number(todoText.dataset.day),
-                Number(todoText.dataset.classIndex),
-                Number(todoText.dataset.todoIndex),
-                todoText.innerText
-            );
+            updateTodoText(todoText.dataset.week, Number(todoText.dataset.day), Number(todoText.dataset.classIndex), Number(todoText.dataset.todoIndex), todoText.innerText);
         }
     });
 
@@ -1359,3 +1135,5 @@ function initCalendarDelegation() {
         }
     });
 }
+
+initCalendarDelegation();
