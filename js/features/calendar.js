@@ -134,6 +134,13 @@ function createCardHeaderTags(cls, typeLabels, hasExam, hasExamGlobal, weekType,
         },
         attrs: {
             title: 'Edytuj'
+        },
+        events: {
+            click: (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                editClass(weekType, dayIndex, classIndex);
+            }
         }
     });
 
@@ -379,7 +386,7 @@ function createAttendancePanel(cardId, weekType, dayIndex, classIndex, columnDat
     const secondLine = createElement('div', {
         cssText: 'margin-top: 5px;',
         text: `${t('attPres')}: ${totalAttended} | ${t('attAbs')}: ${totalAbsent}`
-    });
+    }));
 
     summary.appendChild(strong);
     summary.appendChild(secondLine);
@@ -449,6 +456,7 @@ function createChatPanel(cardId) {
 
     return panel;
 }
+
 function createExpandedActions(cls, weekType, dayIndex, classIndex, columnDateStr, hasExam, isCancelled) {
     const actions = createElement('div', { className: 'expanded-actions' });
 
@@ -573,7 +581,23 @@ function createClassCard(cls, context) {
         dataset: {
             panelId: `panel-${cardId}`
         },
-        cssText: `animation-delay: ${renderIndex * 0.05}s;`
+        cssText: `animation-delay: ${renderIndex * 0.05}s;`,
+        events: {
+            click: (e) => {
+                if (
+                    e.target.closest('.card-expanded-panel') ||
+                    e.target.closest('.btn-icon') ||
+                    e.target.closest('button') ||
+                    e.target.closest('input') ||
+                    e.target.closest('textarea') ||
+                    e.target.closest('[contenteditable="true"]')
+                ) {
+                    return;
+                }
+
+                togglePanel(`panel-${cardId}`);
+            }
+        }
     });
 
     if (isCancelled) {
@@ -616,7 +640,6 @@ function createClassCard(cls, context) {
 
     return card;
 }
-
 function renderCalendar() {
     const calendar = document.getElementById('calendar');
     if (!calendar) return;
@@ -1088,6 +1111,36 @@ function saveClass() {
     renderCalendar();
     updateDashboard();
 }
+function deleteClass() {
+    const weekTypeSelect = document.getElementById('weekTypeSelect');
+    const editClassIndexEl = document.getElementById('editClassIndex');
+    const editDayIndexEl = document.getElementById('editDayIndex');
+
+    if (!weekTypeSelect || !editClassIndexEl || !editDayIndexEl) return;
+
+    const w = weekTypeSelect.value;
+    const d = Number(editDayIndexEl.value);
+    const cIdx = Number(editClassIndexEl.value);
+
+    if (cIdx === -1) return;
+
+    const cls = getSafeClass(w, d, cIdx);
+    if (!cls) return;
+
+    if (!confirm(`Czy na pewno chcesz usunąć lekcję:\n\n${safeText(cls.subject)}\n${safeText(cls.start)} - ${safeText(cls.end)}?`)) {
+        return;
+    }
+
+    scheduleData[w][d].splice(cIdx, 1);
+
+    saveData();
+    closeModal();
+    renderCalendar();
+
+    if (typeof updateDashboard === 'function') {
+        updateDashboard(true);
+    }
+}
 
 function editClass(week, dayIndex, classIndex) {
     const cls = getSafeClass(week, dayIndex, classIndex);
@@ -1106,6 +1159,7 @@ function editClass(week, dayIndex, classIndex) {
     const lecturer = document.getElementById('lecturer');
     const classType = document.getElementById('classType');
     const specificDates = document.getElementById('specificDates');
+    const deleteClassBtn = document.getElementById('deleteClassBtn');
     const classModal = document.getElementById('classModal');
 
     if (modalTitle) setSafeText(modalTitle, 'Edytuj zajęcia');
@@ -1121,9 +1175,13 @@ function editClass(week, dayIndex, classIndex) {
     if (lecturer) lecturer.value = safeText(cls.lecturer);
     if (classType) classType.value = safeText(cls.type || 'inne');
     if (specificDates) specificDates.value = Array.isArray(cls.specificDates) ? cls.specificDates.join(', ') : '';
+
+    if (deleteClassBtn) {
+        deleteClassBtn.style.display = 'inline-flex';
+    }
+
     if (classModal) classModal.style.display = 'flex';
 }
-
 function initCalendarDelegation() {
     if (window.__calendarDelegationInitialized) return;
     window.__calendarDelegationInitialized = true;
