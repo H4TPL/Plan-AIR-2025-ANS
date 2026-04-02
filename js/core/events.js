@@ -170,6 +170,7 @@ function initStaticEvents() {
     // ==========================================
     on('class-modal-cancel-btn', 'click', closeModal);
     on('saveBtn', 'click', saveClass);
+    on('deleteClassBtn', 'click', deleteClass);
 
     // ==========================================
     // Custom date picker
