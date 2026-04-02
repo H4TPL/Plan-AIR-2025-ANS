@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Plan v5.2.2 PRO FIX</title>
+    <meta name="description" content="Smart Plan AiR - plan zajęć, radar kolokwiów, frekwencja, zadania i synchronizacja w jednej aplikacji.">
+    
+    <link rel="icon" type="image/svg+xml" href="./icons/icon-192.svg">
+    <link rel="apple-touch-icon" href="./icons/icon-192.svg">
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5" id="meta-theme-color">
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="mute-alert-overlay">
+        <i class="fas fa-bell-slash"></i>
+        <h1>WYCISZ TELEFON!</h1>
+        <p>Za chwilę zaczynasz zajęcia. Szanujmy prowadzącego.</p>
+        <button id="mute-alert-done-btn">ZROBIONE</button>
+    </div>
+
+    <div id="update-banner">
+        <i class="fas fa-sync-alt"></i> Dostępna aktualizacja! Kliknij, aby odświeżyć.
+    </div>
+
+    <div id="sidebar-overlay"></div>
+
+    <div id="sidebar">
+        <div class="sidebar-header">
+            <span>⚙️ <span data-i18n="settings">Ustawienia</span></span>
+            <button class="sidebar-close" id="sidebar-close-btn" type="button" aria-label="Zamknij menu">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        
+        <div class="lang-toggle">
+            <button class="lang-btn active" id="lang-btn-pl" type="button">PL</button>
+            <button class="lang-btn" id="lang-btn-en" type="button">EN</button>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li id="login-menu-btn">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <i class="fab fa-google" id="login-icon" style="color: #4285F4; font-size:1.2rem;"></i>
+                    <span id="login-text" data-i18n="login">Zaloguj i Synchronizuj</span>
+                </div>
+            </li>
+
+            <li id="admin-panel-btn" style="display: none; background: rgba(255, 215, 0, 0.1); border-radius: 8px;">
+                <i class="fas fa-crown" style="color: #f59e0b"></i>
+                <span data-i18n="admin">Panel Admina (Wnioski)</span>
+            </li>
+            
+            <li id="directory-open-btn">
+                <i class="fas fa-search-plus" style="color: #8b5cf6"></i>
+                <span data-i18n="cat">Katalog / Zaawansowane</span>
+            </li>
+
+            <li id="radar-open-btn">
+                <i class="fas fa-bullseye" style="color: var(--danger)"></i>
+                <span data-i18n="radar">Radar Kolokwiów</span>
+            </li>
+
+            <li id="grades-open-btn">
+                <i class="fas fa-graduation-cap" style="color: #f59e0b"></i>
+                <span data-i18n="avg">Średnia Ocen</span>
+            </li>
+
+            <li id="tasks-open-btn">
+                <i class="fas fa-tasks" style="color: var(--success)"></i>
+                <span data-i18n="tasks">Zbiorcze Zadania</span>
+            </li>
+
+            <li id="attendance-open-btn">
+                <i class="fas fa-user-check" style="color: #3b82f6"></i>
+                <span data-i18n="att">Twoja Frekwencja</span>
+            </li>
+
+            <li id="theme-toggle-btn">
+                <i class="fas fa-palette" style="color: var(--primary)"></i>
+                <span data-i18n="theme">Zmień Motyw</span>
+            </li>
+
+            <li id="theme-options" style="display: none; flex-direction: column; gap: 10px; padding-left: 30px; border-bottom: none; animation: fadeUp 0.2s;">
+                <button class="btn btn-outline" id="theme-light-btn" type="button" style="width: 100%; font-size: 0.8rem">
+                    ☀️ <span data-i18n="themeLight">Jasny</span>
+                </button>
+                <button class="btn btn-outline" id="theme-dark-btn" type="button" style="width: 100%; font-size: 0.8rem">
+                    🌙 <span data-i18n="themeDark">Ciemny</span>
+                </button>
+                <button class="btn btn-outline" id="theme-matrix-btn" type="button" style="width: 100%; font-size: 0.8rem; border-color: #00ff00; color: #00ff00;">
+                    💻 <span data-i18n="themeMatrix">Matrix</span>
+                </button>
+                <button class="btn btn-outline" id="theme-cad-btn" type="button" style="width: 100%; font-size: 0.8rem; border-color: #0055a4; color: #0055a4;">
+                    📐 <span data-i18n="themeCad">Inżynier CAD</span>
+                </button>
+                <button class="btn btn-outline" id="theme-uwu-btn" type="button" style="width: 100%; font-size: 0.8rem; border-color: #ff66b2; color: #ff66b2;">
+                    🌸 <span data-i18n="themeUwu">UWU Anime</span>
+                </button>
+                <button class="btn btn-outline" id="theme-ans-btn" type="button" style="width: 100%; font-size: 0.8rem; border-color: #006633; color: #006633;">
+                    🎓 <span data-i18n="themeAns">Akademia ANS</span>
+                </button>
+            </li>
+
+            <li id="export-btn">
+                <i class="far fa-calendar-plus" style="color: #f59e0b"></i>
+                <span data-i18n="exp">Eksportuj Kalendarz (.ics)</span>
+            </li>
+
+            <li id="qr-open-btn">
+                <i class="fas fa-qrcode" style="color: var(--text-main)"></i>
+                <span data-i18n="share">Udostępnij (Kod QR)</span>
+            </li>
+
+            <li id="hard-reset-btn">
+                <i class="fas fa-skull-crossbones" style="color: var(--text-muted)"></i>
+                <span data-i18n="reset">Twardy Reset Danych</span>
+            </li>
+        </ul>
+    </div>
+
+    <header>
+        <div class="top-bar">
+            <div class="title-group" id="title-group-btn">
+                <button class="hamburger-btn" id="hamburger-btn" type="button" aria-label="Otwórz menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+
+                <svg class="logo-air" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="50" r="35" fill="none" stroke-width="6" stroke-dasharray="8,8"></circle>
+                    <path class="logo-center" d="M50 20 L75 45 L50 70 L25 45 Z"></path>
+                    <circle cx="20" cy="20" r="6" fill="none" stroke-width="2"></circle>
+                    <circle cx="80" cy="20" r="6" fill="none" stroke-width="2"></circle>
+                    <circle cx="80" cy="80" r="6" fill="none" stroke-width="2"></circle>
+                    <circle cx="20" cy="80" r="6" fill="none" stroke-width="2"></circle>
+                    <path d="M26 26 L40 40 M74 26 L60 40 M74 74 L60 60 M26 74 L40 60" fill="none" stroke-width="2"></path>
+                </svg>
+
+                <h1>Smart Plan</h1>
+            </div>
+            
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" data-i18n="search" placeholder="Szukaj przedmiotu, sali...">
+            </div>
+            
+            <div class="controls">
+                <button class="btn btn-outline" id="today-btn" type="button">
+                    <span data-i18n="today">Dziś</span>
+                </button>
+                <button class="btn" id="open-class-modal-btn" type="button">
+                    <i class="fas fa-plus"></i>
+                    <span data-i18n="add">Dodaj</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="global-stats-banner" id="global-stats-banner" style="display: none;">
+            <div>
+                <i class="fas fa-graduation-cap"></i>
+                <small data-i18n="avgLabel">Średnia</small>
+                <span id="dash-avg">-</span>
+            </div>
+            <div>
+                <i class="fas fa-user-check"></i>
+                <small data-i18n="attLabel">Obecność</small>
+                <span id="dash-att">-</span>
+            </div>
+            <div>
+                <i class="fas fa-fire" style="color: #f59e0b;"></i>
+                <small data-i18n="streakLabel">Passa dni</small>
+                <span id="dash-streak">-</span>
+            </div>
+        </div>
+
+        <div id="next-class-widget" style="display: none;">
+            <div class="widget-left">
+                <i class="fas fa-rocket" id="widget-icon"></i>
+                <div class="widget-content">
+                    <h3 id="widget-subtitle" data-i18n="nextClass">Następne zajęcia</h3>
+                    <p id="next-class-text">Ładowanie...</p>
+                </div>
+            </div>
+            <div class="widget-timer" id="widget-timer-container" style="display: none;">
+                <span id="countdown-timer">00:00:00</span>
+                <small data-i18n="startsIn">Do rozpoczęcia</small>
+            </div>
+        </div>
+
+        <div class="semester-progress">
+            <i class="fas fa-flag-checkered" style="color: var(--text-muted)"></i>
+            <div class="semester-progress-bar">
+                <div class="semester-progress-fill" id="semester-bar" style="width: 0%;"></div>
+            </div>
+            <span class="semester-progress-text" id="semester-text">Semestr: Obliczanie...</span>
+        </div>
+        
+        <div class="calendar-nav">
+            <button id="prev-week-btn" type="button">
+                <i class="fas fa-chevron-left"></i>
+                <span data-i18n="prev">Poprzedni</span>
+            </button>
+
+            <div class="current-week-display">
+                <span id="week-label">Ładowanie...</span>
+                <div class="date-picker-wrapper">
+                    <button class="btn btn-icon btn-outline" id="open-date-picker-btn" type="button" aria-label="Wybierz datę">
+                        <i class="far fa-calendar-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button id="next-week-btn" type="button">
+                <span data-i18n="next">Następny</span>
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="calendar-container" id="calendar"></div>
+
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <i class="fas fa-graduation-cap"></i>
+                Smart Plan
+                <span class="version-badge">v5.2.2 PRO FIX</span>
+            </div>
+            <div>
+                <span data-i18n="footerText">Stworzone z ❤️ dla inżynierów AiR</span>
+            </div>
+        </div>
+
+        <div class="footer-links">
+            <a href="#" id="open-changelog-btn">
+                <i class="fas fa-history"></i>
+                <span data-i18n="history">Historia Aktualizacji</span>
+            </a>
+            <a href="#" id="privacy-btn">
+                <i class="fas fa-user-shield"></i>
+                <span data-i18n="privacy">Prywatność</span>
+            </a>
+            <a href="#" id="bug-open-btn">
+                <i class="fas fa-bug"></i>
+                <span data-i18n="bug">Zgłoś Błąd</span>
+            </a>
+        </div>
+    </footer>
+
+    <div id="global-chat-btn">
+        <i class="fas fa-comments"></i>
+    </div>
+    
+    <div id="global-chat-window">
+        <div id="global-chat-header">
+            <span id="hub-title-span" style="display:flex; align-items:center; gap:8px;">
+                <i class="fas fa-layer-group"></i>
+                <span data-i18n="hubTitle">Centrum Komunikacji</span>
+            </span>
+            <div style="display:flex; gap:10px;">
+                <i class="fas fa-arrow-left" id="hub-back-btn" style="display:none; cursor:pointer; font-size:1.2rem; transition:0.2s;"></i>
+                <i class="fas fa-times" id="global-chat-close-btn"></i>
+            </div>
+        </div>
+        
+        <div id="chat-hub-tabs" style="display: flex;">
+            <button class="hub-tab-btn active" id="tab-btn-subjects" type="button">
+                <i class="fas fa-book"></i>
+                <span data-i18n="tabSubjects">Przedmioty</span>
+            </button>
+            <button class="hub-tab-btn" id="tab-btn-students" type="button">
+                <i class="fas fa-user-friends"></i>
+                <span data-i18n="tabStudents">Studenci (DM)</span>
+            </button>
+        </div>
+
+        <div id="chat-hub-selection"></div>
+        
+        <div id="chat-hub-active">
+            <div id="global-chat-messages"></div>
+            <div id="global-chat-input-area">
+                <button class="emoji-btn" id="global-chat-emoji-btn" type="button" aria-label="Wstaw emoji">
+                    <i class="far fa-smile"></i>
+                </button>
+                <input type="text" id="global-chat-input" data-i18n="sendPlaceholder" placeholder="Napisz wiadomość...">
+                <button class="btn-icon" id="global-chat-send-btn" type="button" style="background:var(--primary); color:white; width: 36px; height: 36px;" aria-label="Wyślij wiadomość">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+                
+                <div class="emoji-picker-container" id="global-emoji-picker">
+                    <span class="emoji-item" data-emoji="😀">😀</span>
+                    <span class="emoji-item" data-emoji="😂">😂</span>
+                    <span class="emoji-item" data-emoji="😎">😎</span>
+                    <span class="emoji-item" data-emoji="😍">😍</span>
+                    <span class="emoji-item" data-emoji="😭">😭</span>
+                    <span class="emoji-item" data-emoji="👍">👍</span>
+                    <span class="emoji-item" data-emoji="🙏">🙏</span>
+                    <span class="emoji-item" data-emoji="🔥">🔥</span>
+                    <span class="emoji-item" data-emoji="💡">💡</span>
+                    <span class="emoji-item" data-emoji="💀">💀</span>
+                    <span class="emoji-item" data-emoji="👀">👀</span>
+                    <span class="emoji-item" data-emoji="🍺">🍺</span>
+                    <span class="emoji-item" data-emoji="❤️">❤️</span>
+                    <span class="emoji-item" data-emoji="💯">💯</span>
+                    <span class="emoji-item" data-emoji="🚀">🚀</span>
+                    <span class="emoji-item" data-emoji="✅">✅</span>
+                    <span class="emoji-item" data-emoji="❌">❌</span>
+                    <span class="emoji-item" data-emoji="❓">❓</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="classModal">
+        <div class="modal-content">
+            <h2 id="modalTitle">Dodaj zajęcia</h2>
+
+            <input type="hidden" id="editClassIndex" value="-1">
+            <input type="hidden" id="editDayIndex" value="-1">
+
+            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <div style="flex: 1;">
+                    <label>Typ tyg.</label>
+                    <select id="weekTypeSelect">
+                        <option value="TN">Nieparzysty (TN)</option>
+                        <option value="TP">Parzysty (TP)</option>
+                    </select>
+                </div>
+
+                <div style="flex: 1;">
+                    <label>Dzień</label>
+                    <select id="daySelect">
+                        <option value="0">Poniedziałek</option>
+                        <option value="1">Wtorek</option>
+                        <option value="2">Środa</option>
+                        <option value="3">Czwartek</option>
+                        <option value="4">Piątek</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label>Typ (Kolor)</label>
+                <select id="classType">
+                    <option value="wyklad">Wykład</option>
+                    <option value="cwiczenia">Ćwiczenia</option>
+                    <option value="lab">Laboratorium</option>
+                    <option value="projekt">Projekt</option>
+                    <option value="seminarium">Seminarium</option>
+                    <option value="inne">Inne</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                <div style="flex: 1;">
+                    <label>Od</label>
+                    <input type="time" id="timeStart" required>
+                </div>
+                <div style="flex: 1;">
+                    <label>Do</label>
+                    <input type="time" id="timeEnd" required>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label>Przedmiot</label>
+                <input type="text" id="subject" placeholder="np. Robotyka" required>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label>Sala / Prowadzący</label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="room" style="width: 35%;" placeholder="Sala">
+                    <input type="text" id="lecturer" style="width: 65%;" placeholder="Wykładowca">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label>Tylko wybrane daty (Opcjonalnie)</label>
+                <input type="text" id="specificDates" placeholder="np. 2026-03-09, 2026-03-23">
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button class="btn btn-outline" id="class-modal-cancel-btn" data-close-modal="classModal" type="button">Anuluj</button>
+                <button class="btn" id="saveBtn" type="button">Zapisz</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="customDatePickerModal">
+        <div class="modal-content" style="max-width: 350px; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <button class="btn-icon btn-outline" id="picker-prev-btn" type="button">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <h3 id="pickerMonthYear" style="color: var(--primary); margin: 0;">Miesiąc</h3>
+                <button class="btn-icon btn-outline" id="picker-next-btn" type="button">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 0.8rem; font-weight: bold; color: var(--text-muted); margin-bottom: 10px;">
+                <div>Pn</div>
+                <div>Wt</div>
+                <div>Śr</div>
+                <div>Cz</div>
+                <div>Pt</div>
+                <div>Sb</div>
+                <div>Nd</div>
+            </div>
+
+            <div id="pickerDaysGrid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center;"></div>
+
+            <div style="margin-top: 20px; display:flex; gap:10px; text-align: center;">
+                <button class="btn btn-outline" id="picker-today-btn" type="button" style="width: 100%;">
+                    <span data-i18n="today">Wróć do dzisiaj</span>
+                </button>
+                <button class="btn btn-outline" data-close-modal="customDatePickerModal" type="button" style="width: 100%;">
+                    <span data-i18n="close">Zamknij</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="qrModal">
+        <div class="modal-content" style="text-align: center;">
+            <h2>
+                <span data-i18n="qrTitle">Zeskanuj plan</span>
+            </h2>
+            <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;" data-i18n="qrSub">
+                Aparat w telefonie otworzy ten plan.
+            </p>
+
+            <div id="qrcode" style="display: inline-block; background: white; padding: 15px; border-radius: 10px; margin: 0 auto;"></div>
+
+            <button class="btn btn-outline" type="button" style="width: 100%; margin-top: 20px;" data-close-modal="qrModal">
+                <span data-i18n="close">Zamknij</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="bugModal">
+        <div class="modal-content">
+            <h2 style="color: var(--danger);">
+                <i class="fas fa-bug"></i>
+                <span data-i18n="bug">Zgłoś Błąd</span>
+            </h2>
+
+            <textarea id="bugDescription" class="notes-textarea" placeholder="..." style="min-height: 120px; font-size: 0.95rem; padding: 10px;"></textarea>
+
+            <div style="display: flex; gap: 10px; margin-top: 15px;">
+                <button class="btn btn-outline" type="button" style="flex: 1;" data-close-modal="bugModal">
+                    <span data-i18n="close">Anuluj</span>
+                </button>
+                <button class="btn" id="bug-send-btn" type="button" style="flex: 1; background: var(--danger); border-color: var(--danger);">
+                    Wyślij
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="changelogModal">
+        <div class="modal-content">
+            <h2 style="color: var(--primary); margin-bottom: 15px;">
+                <i class="fas fa-rocket"></i>
+                <span data-i18n="history">Historia Aktualizacji</span>
+            </h2>
+
+            <div style="max-height: 55vh; overflow-y: auto; padding-right: 15px; border-left: 2px solid var(--toggle-bg); padding-left: 10px; margin-left: 5px;">
+                <div class="changelog-item">
+                    <div class="changelog-version">
+                        v5.2.2 PRO FIX
+                        <span class="changelog-date">Teraz</span>
+                    </div>
+                    <ul>
+                        <li><strong>Usunięcie Błędu Logowania:</strong> Konta bez ustawionego pełnego Imienia/Nazwiska w Google nie psują już ekranu logowania i paska Admina. Zawsze widzisz poprawny panel i znajomych!</li>
+                        <li><strong>Zadania Zbiorcze (Edycja):</strong> Z okna głównego "Zbiorcze zadania" możesz edytować tekst i kasować zadania koszem (w 100% zintegrowane).</li>
+                        <li><strong>Usuwanie z Radaru:</strong> Z widoku "Radaru" usuniesz kolokwium jednym klikiem (X).</li>
+                        <li><strong>Brak zacinania czatu:</strong> Czat już nie resetuje się co 60s, kiedy akurat coś piszesz!</li>
+                        <li><strong>BEZPIECZEŃSTWO &amp; PWA:</strong> Ochrona przed atakami XSS na czacie oraz naprawiony instalator aplikacji offline (PWA). Kod przeniesiony do osobnych plików!</li>
+                    </ul>
+                </div>
+            </div>
+
+            <button class="btn btn-outline" type="button" style="width: 100%; margin-top: 20px;" data-close-modal="changelogModal">
+                <span data-i18n="close">Zamknij</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="radarModal">
+        <div class="modal-content">
+            <h2 style="color: var(--danger);">
+                <i class="fas fa-radar"></i>
+                <span data-i18n="radarTitle">Radar Kolokwiów</span>
+            </h2>
+
+            <div id="radar-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 50vh; overflow-y: auto; padding-right: 5px;"></div>
+
+            <button class="btn btn-outline" type="button" style="width: 100%; margin-top: 20px;" data-close-modal="radarModal">
+                <span data-i18n="radarBtn">Biorę się za naukę!</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="gradesModal">
+        <div class="modal-content" style="max-height: 80vh; display: flex; flex-direction: column;">
+            <h2 style="color: var(--primary); margin-bottom: 5px;">
+                <i class="fas fa-graduation-cap"></i>
+                <span data-i18n="gradesTitle">Średnia Ocen</span>
+            </h2>
+
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;" data-i18n="gradesSub">
+                Wpisz oceny (np. 5, 4.5, 3).
+            </p>
+
+            <div id="grades-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div>
+
+            <button class="btn btn-outline" type="button" style="width: 100%; margin-top: 20px;" data-close-modal="gradesModal">
+                <span data-i18n="close">Zamknij</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="globalTasksModal">
+        <div class="modal-content" style="max-height: 80vh; display: flex; flex-direction: column;">
+            <h2 style="color: var(--success); margin-bottom: 5px;">
+                <i class="fas fa-tasks"></i>
+                <span data-i18n="tasksTitle">Zbiorcze Zadania</span>
+            </h2>
+
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;" data-i18n="tasksSub">
+                Wszystkie zadania ze wszystkich przedmiotów w jednym miejscu.
+            </p>
+
+            <div id="global-tasks-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div>
+
+            <button class="btn btn-outline" type="button" style="width: 100%; margin-top: 20px;" data-close-modal="globalTasksModal">
+                <span data-i18n="close">Zamknij</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="attendanceModal">
+        <div class="modal-content" style="max-height: 80vh; display: flex; flex-direction: column; width: 95%; max-width: 600px;">
+            <h2 style="color: #3b82f6; margin-bottom: 5px;">
+                <i class="fas fa-user-check"></i>
+                <span data-i18n="attTitle">Twoja Frekwencja</span>
+            </h2>
+
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;" data-i18n="attSub">
+                Zestawienie obecności. Rozwiń, by zobaczyć szczegóły dat.
+            </p>
+
+            <div id="attendance-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div>
+
+            <button class="btn btn-outline" type="button" style="width: 100%; margin-top: 20px;" data-close-modal="attendanceModal">
+                <span data-i18n="close">Zamknij</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="adminPanelModal">
+        <div class="modal-content">
+            <h2 style="color: #f59e0b; margin-bottom: 5px;">
+                <i class="fas fa-crown"></i>
+                <span data-i18n="admin">Panel Starosty</span>
+            </h2>
+
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+                Zgłoszenia zmian od innych studentów, czekające na Twoją akceptację.
+            </p>
+
+            <div id="admin-requests-list" style="overflow-y: auto; padding-right: 5px; flex: 1;"></div>
+
+            <button class="btn btn-outline" type="button" style="width: 100%; margin-top: 20px;" data-close-modal="adminPanelModal">
+                <span data-i18n="close">Zamknij</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="directoryModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <h2 style="color: #8b5cf6; margin-bottom: 15px;">
+                <i class="fas fa-search-plus"></i>
+                <span data-i18n="dirTitle">Katalog Systemowy</span>
+            </h2>
+
+            <div class="directory-tabs-container">
+                <button class="dir-tab-btn active" id="dir-tab-lecturer" type="button">
+                    <i class="fas fa-user-tie"></i>
+                    <span data-i18n="dirLec">Wykładowcy</span>
+                </button>
+                <button class="dir-tab-btn" id="dir-tab-room" type="button">
+                    <i class="fas fa-door-open"></i>
+                    <span data-i18n="dirRoom">Sale</span>
+                </button>
+            </div>
+
+            <div id="directory-list" style="overflow-y: auto; padding-right: 5px; flex: 1; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));"></div>
+
+            <button class="btn btn-outline" type="button" style="width: 100%; margin-top: 20px;" data-close-modal="directoryModal">
+                <span data-i18n="close">Zamknij</span>
+            </button>
+        </div>
+    </div>
+
+    <script src="js/config/firebase-config.js"></script>
+    <script src="js/config/app-data.js"></script>
+
+    <script src="js/core/i18n.js"></script>
+    <script src="js/core/date-utils.js"></script>
+    <script src="js/core/security.js"></script>
+    <script src="js/core/storage.js"></script>
+    <script src="js/core/global-events.js"></script>
+    <!-- <script src="js/core/pwa.js"></script> -->
+    <script src="js/core/dashboard.js"></script>
+    <script src="js/core/events.js"></script>
+
+    <script src="js/features/grades.js"></script>
+    <script src="js/features/tasks.js"></script>
+    <script src="js/features/attendance.js"></script>
+    <script src="js/features/radar.js"></script>
+    <script src="js/features/theme.js"></script>
+    <script src="js/features/export.js"></script>
+    <script src="js/features/qr.js"></script>
+    <script src="js/features/modals.js"></script>
+    <script src="js/features/directory.js"></script>
+    <script src="js/features/auth.js"></script>
+    <script src="js/features/admin.js"></script>
+    <script src="js/features/calendar.js"></script>
+    <script src="js/features/chat.js"></script>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
