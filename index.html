@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Smart Plan v5.2.2 PRO FIX</title>
     <meta name="description" content="Smart Plan AiR - plan zajęć, radar kolokwiów, frekwencja, zadania i synchronizacja w jednej aplikacji.">
-    
+
     <link rel="icon" type="image/svg+xml" href="./icons/icon-192.svg">
     <link rel="apple-touch-icon" href="./icons/icon-192.svg">
-    
+
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f46e5" id="meta-theme-color">
 
@@ -42,7 +42,7 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        
+
         <div class="lang-toggle">
             <button class="lang-btn active" id="lang-btn-pl" type="button">PL</button>
             <button class="lang-btn" id="lang-btn-en" type="button">EN</button>
@@ -60,7 +60,7 @@
                 <i class="fas fa-crown" style="color: #f59e0b"></i>
                 <span data-i18n="admin">Panel Admina (Wnioski)</span>
             </li>
-            
+
             <li id="directory-open-btn">
                 <i class="fas fa-search-plus" style="color: #8b5cf6"></i>
                 <span data-i18n="cat">Katalog / Zaawansowane</span>
@@ -148,12 +148,12 @@
 
                 <h1>Smart Plan</h1>
             </div>
-            
+
             <div class="search-bar">
                 <i class="fas fa-search"></i>
                 <input type="text" id="searchInput" data-i18n="search" placeholder="Szukaj przedmiotu, sali...">
             </div>
-            
+
             <div class="controls">
                 <button class="btn btn-outline" id="today-btn" type="button">
                     <span data-i18n="today">Dziś</span>
@@ -204,7 +204,7 @@
             </div>
             <span class="semester-progress-text" id="semester-text">Semestr: Obliczanie...</span>
         </div>
-        
+
         <div class="calendar-nav">
             <button id="prev-week-btn" type="button">
                 <i class="fas fa-chevron-left"></i>
@@ -260,7 +260,7 @@
     <div id="global-chat-btn">
         <i class="fas fa-comments"></i>
     </div>
-    
+
     <div id="global-chat-window">
         <div id="global-chat-header">
             <span id="hub-title-span" style="display:flex; align-items:center; gap:8px;">
@@ -272,7 +272,7 @@
                 <i class="fas fa-times" id="global-chat-close-btn"></i>
             </div>
         </div>
-        
+
         <div id="chat-hub-tabs" style="display: flex;">
             <button class="hub-tab-btn active" id="tab-btn-subjects" type="button">
                 <i class="fas fa-book"></i>
@@ -285,7 +285,7 @@
         </div>
 
         <div id="chat-hub-selection"></div>
-        
+
         <div id="chat-hub-active">
             <div id="global-chat-messages"></div>
             <div id="global-chat-input-area">
@@ -296,7 +296,7 @@
                 <button class="btn-icon" id="global-chat-send-btn" type="button" style="background:var(--primary); color:white; width: 36px; height: 36px;" aria-label="Wyślij wiadomość">
                     <i class="fas fa-paper-plane"></i>
                 </button>
-                
+
                 <div class="emoji-picker-container" id="global-emoji-picker">
                     <span class="emoji-item" data-emoji="😀">😀</span>
                     <span class="emoji-item" data-emoji="😂">😂</span>
@@ -623,7 +623,7 @@
     <script src="js/core/security.js"></script>
     <script src="js/core/storage.js"></script>
     <script src="js/core/global-events.js"></script>
-    <!-- <script src="js/core/pwa.js"></script> -->
+    <script src="js/core/pwa.js"></script>
     <script src="js/core/dashboard.js"></script>
     <script src="js/core/events.js"></script>
 
