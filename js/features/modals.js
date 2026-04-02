@@ -145,11 +145,38 @@ function openModal() {
     const modalTitle = document.getElementById('modalTitle');
     const saveBtn = document.getElementById('saveBtn');
     const editClassIndex = document.getElementById('editClassIndex');
+    const editDayIndex = document.getElementById('editDayIndex');
+    const weekTypeSelect = document.getElementById('weekTypeSelect');
+    const daySelect = document.getElementById('daySelect');
+    const timeStart = document.getElementById('timeStart');
+    const timeEnd = document.getElementById('timeEnd');
+    const subject = document.getElementById('subject');
+    const room = document.getElementById('room');
+    const lecturer = document.getElementById('lecturer');
+    const classType = document.getElementById('classType');
+    const specificDates = document.getElementById('specificDates');
+    const deleteClassBtn = document.getElementById('deleteClassBtn');
     const classModal = document.getElementById('classModal');
 
     if (modalTitle) setSafeText(modalTitle, 'Dodaj zajęcia');
     if (saveBtn) setSafeText(saveBtn, 'Zapisz');
     if (editClassIndex) editClassIndex.value = '-1';
+    if (editDayIndex) editDayIndex.value = '-1';
+
+    if (weekTypeSelect) weekTypeSelect.value = 'TN';
+    if (daySelect) daySelect.value = '0';
+    if (timeStart) timeStart.value = '';
+    if (timeEnd) timeEnd.value = '';
+    if (subject) subject.value = '';
+    if (room) room.value = '';
+    if (lecturer) lecturer.value = '';
+    if (classType) classType.value = 'wyklad';
+    if (specificDates) specificDates.value = '';
+
+    if (deleteClassBtn) {
+        deleteClassBtn.style.display = 'none';
+    }
+
     if (classModal) classModal.style.display = 'flex';
 }
 
